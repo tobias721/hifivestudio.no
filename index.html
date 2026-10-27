@@ -35,17 +35,25 @@
 <section class="hero"><svg class="hero-hand" aria-hidden="true" viewBox="100 90 265 320" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M185,250 L185,130 L225,130 L225,105 L265,105 L265,130 L305,130 L305,185 L345,185 L345,330 L325,360 L325,392 L225,392 L225,380 C225,366 211.3,351.9 200,335.4 L121,223 C113,211 126,201 142,208 L185,250 Z"/><path d="M225,130 L225,220 L265,220 L265,130"/><path d="M305,130 L305,325"/><path d="M225,325 L225,255 L265,255 L265,325"/></svg><div class="wrap hero-grid">
   <div>
     <div class="eyebrow">Gratis gjennomgang</div>
-    <h1 style="margin-top:18px">Kundene dine googler. <span class="soft">Sørg for at de finner deg.</span></h1>
-    <p class="lead">Vi setter opp Google-annonsene, landingssiden og sporingen for håndverkerbedrifter — og drifter alt videre. Du tar telefonen. Fast månedspris, ingen bindingstid, og annonsebudsjettet betaler du rett til Google.</p>
+    <h1 style="margin-top:18px">Kundene dine googler. Vi sørger for at de finner deg.</h1>
+    <p class="lead">Vi setter opp Google-annonsene, landingssiden og sporingen for håndverkerbedrifter, og drifter alt videre. Du tar telefonen. Fast månedspris, ingen bindingstid, og annonsebudsjettet betaler du rett til Google.</p>
     <div class="hero-actions">
       <a class="btn" href="/kontakt">Be om gratis gjennomgang</a>
       <a class="link" href="tel:+4791904010">Eller ring 91 90 40 10</a>
     </div>
+    <p class="hero-trust">Tobias Svendsen · rørlegger i 14 år · Org.nr 938 365 180</p>
   </div>
-  <aside class="report" aria-label="Utsnitt fra en ekte helsesjekk">
-  <div class="report-top"><span class="eyebrow">Helsesjekk</span><span class="report-tag">Eksempel</span></div>
-  <div class="report-firm">Rørleggerfirma i en mellomstor norsk by</div>
-  <div class="report-date">Oktober 2026</div>
+  <aside class="report" id="hkort" aria-label="Helsesjekk – søk på byen din">
+  <div class="report-sok" id="hsok" hidden>
+    <label class="sr" for="hby">Skriv byen din</label>
+    <input id="hby" list="hbyer" placeholder="Skriv byen din" autocomplete="off" enterkeyhint="search">
+    <datalist id="hbyer"></datalist>
+    <button class="btn" id="hsjekk" type="button">Sjekk</button>
+  </div>
+  <div class="report-top"><span class="eyebrow">Helsesjekk</span><span class="report-tag" id="htag">Eksempel</span></div>
+  <div class="report-firm" id="htittel">Rørleggerfirma i en mellomstor norsk by</div>
+  <div class="report-date" id="hdato">Oktober 2026</div>
+  <div id="hinnhold" aria-live="polite">
   <dl>
     <div><dt>Søk i måneden, «rørlegger + din by»</dt><dd>100–1 000</dd></div>
     <div><dt>Klikkpris, toppen av siden</dt><dd>ca. 25–100 kr</dd></div>
@@ -59,19 +67,10 @@
     <div class="bar"><span>Nr. 3</span><i style="--w:27%"></i><b>40</b></div>
   </div>
   <div class="report-fix"><span class="eyebrow">Fiks først</span><p>Samme telefonnummer overalt, og en fast rutine for å be om omtaler etter hver jobb.</p></div>
+  </div>
 </aside>
 </div></section>
 
-<section id="bysok" class="bysok" hidden><div class="wrap">
-  <div class="sec-head"><h2>Hvor mange søker etter rørlegger der du jobber?</h2><p class="lead">Skriv byen din. Tallene er Googles egne, fra de siste tolv månedene.</p></div>
-  <div class="bysok-felt">
-    <label class="sr" for="by">Skriv byen din</label>
-    <input id="by" list="byer" placeholder="Skriv byen din" autocomplete="off" enterkeyhint="search">
-    <datalist id="byer"></datalist>
-    <button class="btn" id="vis" type="button">Vis</button>
-  </div>
-  <div id="bysvar" aria-live="polite"></div>
-</div></section>
 <script src="/js/bysok.js" defer></script>
 
 <section id="helsesjekk"><div class="wrap">
@@ -90,7 +89,7 @@
 <section id="tjenester"><div class="wrap">
   <div class="sec-head"><h2>Dette gjør vi</h2><p class="lead">Du trenger ikke alt. Vi setter sammen det som passer bedriften din, og drifter det videre.</p></div>
   <div class="grid g3">
-    <div class="card"><h3>Google Bedriftsprofil</h3><p>Profilen din på Google Maps og Søk blir satt opp, verifisert og holdt aktiv, så du dukker opp når folk i området søker. Og når ChatGPT eller Googles AI anbefaler rørleggere, er det denne profilen de leser.</p></div><div class="card"><h3>Google Ads og Meta-annonser</h3><p>Vi bygger og drifter annonsene som vises når folk i området ditt søker etter det du gjør. Annonsebudsjettet betaler du rett til Google — vi tar ingen prosent.</p></div><div class="card"><h3>Landingsside som gir henvendelser</h3><p>En side laget for én ting: at den som klikker tar kontakt. Kort, mobilvennlig, med skjema som kvalifiserer kunden.</p></div><div class="card"><h3>Varsel under 30 sekunder</h3><p>Du får SMS og e-post med navn, telefon og hva det gjelder under 30 sekunder etter at skjemaet er sendt.</p></div><div class="card"><h3>Sosiale medier</h3><p>Vi skriver innleggene og driver Facebook og Instagram. Du sender bilder fra jobbene — vi tar resten.</p></div><div class="card"><h3>Økonomisk rapport</h3><p>Tallene i kroner, ikke klikk og visninger: hva som er brukt, hvor mange henvendelser det ga, og hva hver kostet.</p></div>
+    <div class="card"><h3>Google Bedriftsprofil</h3><p>Profilen din på Google Maps og Søk blir satt opp, verifisert og holdt aktiv, så du dukker opp når folk i området søker. Og når ChatGPT eller Googles AI anbefaler rørleggere, er det denne profilen de leser.</p></div><div class="card"><h3>Google Ads og Meta-annonser</h3><p>Vi bygger og drifter annonsene som vises når folk i området ditt søker etter det du gjør. Annonsebudsjettet betaler du rett til Google . Vi tar ingen prosent.</p></div><div class="card"><h3>Landingsside som gir henvendelser</h3><p>En side laget for én ting: at den som klikker tar kontakt. Kort, mobilvennlig, med skjema som kvalifiserer kunden.</p></div><div class="card"><h3>Varsel under 30 sekunder</h3><p>Du får SMS og e-post med navn, telefon og hva det gjelder under 30 sekunder etter at skjemaet er sendt.</p></div><div class="card"><h3>Sosiale medier</h3><p>Vi skriver innleggene og driver Facebook og Instagram. Du sender bilder fra jobbene . Vi tar resten.</p></div><div class="card"><h3>Økonomisk rapport</h3><p>Tallene i kroner, ikke klikk og visninger: hva som er brukt, hvor mange henvendelser det ga, og hva hver kostet.</p></div>
   </div>
 </div></section>
 
@@ -102,13 +101,13 @@
     </div>
     <figure>
       <img src="/img/rapport.webp" alt="Eksempel på ukesrapport fra HiFive Studio" width="1344" height="752" loading="lazy">
-      <figcaption>Eksempel — illustrasjon av ukesrapporten, ikke ekte tall. Din rapport viser hva du brukte, hvor mange som tok kontakt og hva hver henvendelse kostet.</figcaption>
+      <figcaption>Eksempel: illustrasjon av ukesrapporten, ikke ekte tall. Din rapport viser hva du brukte, hvor mange som tok kontakt og hva hver henvendelse kostet.</figcaption>
     </figure>
   </div>
 </div></section>
 
 <section><div class="wrap">
-  <div class="sec-head"><h2>Priser og pakker</h2><p class="lead">Fast månedspris, ingen bindingstid. Annonsebudsjettet betaler du rett til Google og Meta — vi tar ingen prosent.</p></div>
+  <div class="sec-head"><h2>Priser og pakker</h2><p class="lead">Fast månedspris, ingen bindingstid. Annonsebudsjettet betaler du rett til Google og Meta . Vi tar ingen prosent.</p></div>
   <div class="prices">
     <div class="price"><h3>Synlig</h3><div class="meta">For deg under 4 mill. i omsetning</div><div class="amt">1.490 kr/mnd</div><div class="meta">Oppsett 4.900 kr · ingen annonser</div>
       <ul><li>Google Bedriftsprofil</li><li>Gule Sider, 1881, Proff, Mittanbud</li><li>QR og rutine for anmeldelser</li><li>Kvartalsvis gjennomgang</li></ul></div>
@@ -120,16 +119,16 @@
       <ul><li>Alt i Eksklusiv</li><li>Flere områder</li><li>Månedlig strategimøte</li><li>Egen kontaktperson</li></ul></div>
   </div>
   <ul class="trust"><li>Org.nr. 938 365 180</li><li>Ingen binding</li><li>Du eier alt: domene, nettside og Google-profil</li></ul>
-  <p style="margin-top:28px"><a class="link" href="/priser-og-pakker">Se alle detaljer — priser og pakker →</a></p>
+  <p style="margin-top:28px"><a class="link" href="/priser-og-pakker">Se alle priser og pakker →</a></p>
 </div></section>
 
 <section id="faq"><div class="wrap">
   <div class="sec-head"><h2>Spørsmål, besvart.</h2></div>
-  <div class="faq"><details><summary>Hva er HiFive Studio?</summary><p>Vi sørger for at folk som skal pusse opp havner hos deg — og bare deg. Vi kjører annonsene, lager siden de lander på, og sender henvendelsen rett på mobilen din sekunder etter at den kommer inn. Tobias som driver HiFive er rørlegger med 14 år i faget, så vi kjenner bransjen fra innsiden.</p></details>
-<details><summary>Hvorfor anbefaler dere minst 3 måneder med annonsering?</summary><p>Fordi Google og Meta må lære hvem som er riktig kunde for deg. Måned 1 samler systemet data og finner ut hvilke søk og hvilke folk som faktisk fører til jobber — da er henvendelsene færre og dyrere. Måned 2 begynner vi å kutte det som ikke virker og legge pengene der de gir resultat. Måned 3 er kampanjen innkjørt, og det er da du ser hva den faktisk kan levere. Stopper du etter fire uker, betaler du for læringen uten å få gevinsten. Derfor anbefaler vi 90 dager — men vi har ingen bindingstid, og du kan si opp når du vil.</p></details>
-<details><summary>Hvor mange henvendelser kan jeg forvente?</summary><p>Regnestykket er enkelt: et klikk på relevante søkeord koster typisk 20–40 kr i Norge, og omtrent 2–3 av 100 som klikker tar faktisk kontakt. Med 12.000 kr i annonsebudsjett får du rundt 350–450 klikk, som gir 8–12 kvalifiserte henvendelser i måneden. Første måned ligger normalt lavere mens kampanjen lærer hvem som er riktig kunde for deg. Det er et regnestykke, ikke et løfte — det eneste vi garanterer står her: gir kampanjen færre enn 6 kvalifiserte henvendelser i perioden dag 31 til dag 90, refunderer vi oppsettet på Kundebooking og Eksklusiv. De første 30 dagene er datainnsamling og teller ikke med. Forutsetter annonsebudsjett fra 12.000 kr/mnd (Kundebooking) eller 18.000 kr/mnd (Eksklusiv) i hele perioden.</p></details>
-<details><summary>Hva er en kvalifisert henvendelse — og er det bindingstid?</summary><p>En kvalifisert henvendelse er en person med ekte navn og telefonnummer som svarer, innenfor ditt område, som eier boligen eller bestemmer, og som vil ha jobben gjort innen seks måneder. Feil nummer, selgere og folk utenfor området teller ikke. Du betaler fast pris — ingen tillegg per henvendelse, uansett hvor mange du får. Og nei, det er ingen bindingstid og ingen oppsigelsestid: du kan si opp fra måned til måned. Vi jobber med én bedrift per område, så du konkurrerer aldri mot en annen av våre kunder om de samme henvendelsene.</p></details>
-<details><summary>Hva er annonsebudsjett, og hvor går pengene?</summary><p>Annonsebudsjettet er pengene som kjøper selve visningene på Google og Facebook. Når noen søker etter «bad renovering» i ditt område, er det en auksjon om hvem som vises øverst — og annonsebudsjettet er det du byr med. Du betaler kun når noen faktisk klikker seg inn til deg. 100 % av annonsebudsjettet går til Google og Meta, ikke til oss. Kontoen står i ditt navn med ditt kort, du betaler dem direkte, og du ser hver eneste krone i ditt eget dashbord. De fleste norske byråer tar 10–20 % av annonsebudsjettet i tillegg til månedsprisen. Det gjør ikke vi — du betaler kun fastprisen. Den dekker at vi bygger kampanjen, skriver annonsene, lager landingssiden, setter opp varslingen og justerer alt løpende. To separate regninger, ingen skjulte påslag.</p></details></div>
+  <div class="faq"><details><summary>Hva er HiFive Studio?</summary><p>Vi sørger for at folk som skal pusse opp havner hos deg, og bare deg. Vi kjører annonsene, lager siden de lander på, og sender henvendelsen rett på mobilen din sekunder etter at den kommer inn. Tobias som driver HiFive er rørlegger med 14 år i faget, så vi kjenner bransjen fra innsiden.</p></details>
+<details><summary>Hvorfor anbefaler dere minst 3 måneder med annonsering?</summary><p>Fordi Google og Meta må lære hvem som er riktig kunde for deg. Måned 1 samler systemet data og finner ut hvilke søk og hvilke folk som faktisk fører til jobber. Da er henvendelsene færre og dyrere. Måned 2 begynner vi å kutte det som ikke virker og legge pengene der de gir resultat. Måned 3 er kampanjen innkjørt, og det er da du ser hva den faktisk kan levere. Stopper du etter fire uker, betaler du for læringen uten å få gevinsten. Derfor anbefaler vi 90 dager. Men vi har ingen bindingstid, og du kan si opp når du vil.</p></details>
+<details><summary>Hvor mange henvendelser kan jeg forvente?</summary><p>Regnestykket er enkelt: et klikk på relevante søkeord koster typisk 20–40 kr i Norge, og omtrent 2–3 av 100 som klikker tar faktisk kontakt. Med 12.000 kr i annonsebudsjett får du rundt 350–450 klikk, som gir 8–12 kvalifiserte henvendelser i måneden. Første måned ligger normalt lavere mens kampanjen lærer hvem som er riktig kunde for deg. Det er et regnestykke, ikke et løfte. Det eneste vi garanterer står her: gir kampanjen færre enn 6 kvalifiserte henvendelser i perioden dag 31 til dag 90, refunderer vi oppsettet på Kundebooking og Eksklusiv. De første 30 dagene er datainnsamling og teller ikke med. Forutsetter annonsebudsjett fra 12.000 kr/mnd (Kundebooking) eller 18.000 kr/mnd (Eksklusiv) i hele perioden.</p></details>
+<details><summary>Hva er en kvalifisert henvendelse, og er det bindingstid?</summary><p>En kvalifisert henvendelse er en person med ekte navn og telefonnummer som svarer, innenfor ditt område, som eier boligen eller bestemmer, og som vil ha jobben gjort innen seks måneder. Feil nummer, selgere og folk utenfor området teller ikke. Du betaler fast pris, uten tillegg per henvendelse, uansett hvor mange du får. Og nei, det er ingen bindingstid og ingen oppsigelsestid: du kan si opp fra måned til måned. Vi jobber med én bedrift per område, så du konkurrerer aldri mot en annen av våre kunder om de samme henvendelsene.</p></details>
+<details><summary>Hva er annonsebudsjett, og hvor går pengene?</summary><p>Annonsebudsjettet er pengene som kjøper selve visningene på Google og Facebook. Når noen søker etter «bad renovering» i ditt område, er det en auksjon om hvem som vises øverst, og annonsebudsjettet er det du byr med. Du betaler kun når noen faktisk klikker seg inn til deg. 100 % av annonsebudsjettet går til Google og Meta, ikke til oss. Kontoen står i ditt navn med ditt kort, du betaler dem direkte, og du ser hver eneste krone i ditt eget dashbord. De fleste norske byråer tar 10–20 % av annonsebudsjettet i tillegg til månedsprisen. Det gjør ikke vi. Du betaler kun fastprisen. Den dekker at vi bygger kampanjen, skriver annonsene, lager landingssiden, setter opp varslingen og justerer alt løpende. To separate regninger, ingen skjulte påslag.</p></details></div>
   <div class="eyebrow faq-sub">Det vi oftest får høre på telefon</div>
   <div class="faq"><details><summary>«Vi har prøvd Google Ads før – det funket ikke.»</summary><p>Da er spørsmålet: hva ble målt? De fleste får satt opp en kampanje uten sporing, og så vet ingen om det var annonsene som sviktet eller om ingen så etter. Vi sporer hvert anrop og hvert skjema fra annonsene, og du ser tallene hver uke – i kroner, ikke klikk.</p></details>
 <details><summary>«Kan dere garantere resultater?»</summary><p>Nei. Ingen kan det, og de som sier det lyver. Det vi garanterer er oppsettet, målingen – og på Kundebooking og Eksklusiv et minimum av kvalifiserte henvendelser i perioden dag 31–90. Får du færre enn 6, refunderer vi oppsettet.</p></details>
@@ -140,7 +139,7 @@
 </div></section>
 <section><div class="wrap"><div class="cta">
   <h2>Klar for flere kunder?</h2>
-  <p>Fortell oss om bedriften din, så gjør vi en gratis gjennomgang: dukker du opp når folk søker etter tjenesten din i området ditt — ikke bare på firmanavnet? Hvordan står Google-profilen din mot konkurrentene? Du får en ærlig prioritering av hva som bør fikses først, uten forpliktelser.</p>
+  <p>Fortell oss om bedriften din, så gjør vi en gratis gjennomgang: dukker du opp når folk søker etter tjenesten din i området ditt, ikke bare på firmanavnet? Hvordan står Google-profilen din mot konkurrentene? Du får en ærlig prioritering av hva som bør fikses først, uten forpliktelser.</p>
   <div class="cta-actions"><a class="btn" href="tel:+4791904010">Ring 91 90 40 10</a><a class="btn ghost" href="mailto:tobias@hifivestudio.no?subject=Gratis%20gjennomgang&amp;body=Hei%20Tobias%21%0A%0AJeg%20er%20interessert%20i%20%C3%A5%20h%C3%B8re%20mer%20om%20en%20gratis%20gjennomgang.%0A%0AFirma%3A%0ABy/omr%C3%A5de%3A%0ATelefon%3A%0A%0AMvh">Send e-post</a><a class="btn ghost" href="/priser-og-pakker">Se pakkene</a></div>
 </div></div></section>
 
@@ -150,7 +149,7 @@
     <div class="foot">
       <div>
         <a class="logo" href="/"><img src="/img/logo-hand.svg" alt="" width="22" height="26">HiFive Studio</a>
-        <p style="margin-top:14px">Vi gjør håndverksbedrifter synlige der kundene leter — Google-profil, annonser og sosiale medier. Satt opp én gang, driftet av oss.</p>
+        <p style="margin-top:14px">Vi gjør håndverksbedrifter synlige der kundene leter: Google-profil, annonser og sosiale medier. Satt opp én gang, driftet av oss.</p>
       </div>
       <div>
         <span class="eyebrow">Snarveier</span>

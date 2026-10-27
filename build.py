@@ -68,7 +68,7 @@ def page(slug, title, desc, body):
     <div class="foot">
       <div>
         <a class="logo" href="/"><img src="/img/logo-hand.svg" alt="" width="22" height="26">HiFive Studio</a>
-        <p style="margin-top:14px">Vi gjør håndverksbedrifter synlige der kundene leter — Google-profil, annonser og sosiale medier. Satt opp én gang, driftet av oss.</p>
+        <p style="margin-top:14px">Vi gjør håndverksbedrifter synlige der kundene leter: Google-profil, annonser og sosiale medier. Satt opp én gang, driftet av oss.</p>
       </div>
       <div>
         <span class="eyebrow">Snarveier</span>
@@ -97,17 +97,17 @@ def page(slug, title, desc, body):
 def cta(title="Klar for flere kunder?"):
     return f"""<section><div class="wrap"><div class="cta">
   <h2>{title}</h2>
-  <p>Fortell oss om bedriften din, så gjør vi en gratis gjennomgang: dukker du opp når folk søker etter tjenesten din i området ditt — ikke bare på firmanavnet? Hvordan står Google-profilen din mot konkurrentene? Du får en ærlig prioritering av hva som bør fikses først, uten forpliktelser.</p>
+  <p>Fortell oss om bedriften din, så gjør vi en gratis gjennomgang: dukker du opp når folk søker etter tjenesten din i området ditt, ikke bare på firmanavnet? Hvordan står Google-profilen din mot konkurrentene? Du får en ærlig prioritering av hva som bør fikses først, uten forpliktelser.</p>
   <div class="cta-actions"><a class="btn" href="{TEL}">Ring 91 90 40 10</a><a class="btn ghost" href="{MAIL}">Send e-post</a><a class="btn ghost" href="/priser-og-pakker">Se pakkene</a></div>
 </div></div></section>"""
 
 
 SERVICES = [
     ("Google Bedriftsprofil", "Profilen din på Google Maps og Søk blir satt opp, verifisert og holdt aktiv, så du dukker opp når folk i området søker. Og når ChatGPT eller Googles AI anbefaler rørleggere, er det denne profilen de leser."),
-    ("Google Ads og Meta-annonser", "Vi bygger og drifter annonsene som vises når folk i området ditt søker etter det du gjør. Annonsebudsjettet betaler du rett til Google — vi tar ingen prosent."),
+    ("Google Ads og Meta-annonser", "Vi bygger og drifter annonsene som vises når folk i området ditt søker etter det du gjør. Annonsebudsjettet betaler du rett til Google . Vi tar ingen prosent."),
     ("Landingsside som gir henvendelser", "En side laget for én ting: at den som klikker tar kontakt. Kort, mobilvennlig, med skjema som kvalifiserer kunden."),
     ("Varsel under 30 sekunder", "Du får SMS og e-post med navn, telefon og hva det gjelder under 30 sekunder etter at skjemaet er sendt."),
-    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram. Du sender bilder fra jobbene — vi tar resten."),
+    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram. Du sender bilder fra jobbene . Vi tar resten."),
     ("Økonomisk rapport", "Tallene i kroner, ikke klikk og visninger: hva som er brukt, hvor mange henvendelser det ga, og hva hver kostet."),
 ]
 
@@ -127,10 +127,18 @@ HEALTH = [
     ("H5", "Hva bør fikses først", "2 ulike", "telefonnumre på Google og nettsiden", "Tre konkrete tiltak sortert etter effekt. De du kan gjøre selv i dag, får du gratis."),
 ]
 
-REPORT = """<aside class="report" aria-label="Utsnitt fra en ekte helsesjekk">
-  <div class="report-top"><span class="eyebrow">Helsesjekk</span><span class="report-tag">Eksempel</span></div>
-  <div class="report-firm">Rørleggerfirma i en mellomstor norsk by</div>
-  <div class="report-date">Oktober 2026</div>
+# N4 27.10: kortet er interaktivt – søk på byen øverst, js/bysok.js bytter eksempelet med Googles tall for byen
+REPORT = """<aside class="report" id="hkort" aria-label="Helsesjekk – søk på byen din">
+  <div class="report-sok" id="hsok" hidden>
+    <label class="sr" for="hby">Skriv byen din</label>
+    <input id="hby" list="hbyer" placeholder="Skriv byen din" autocomplete="off" enterkeyhint="search">
+    <datalist id="hbyer"></datalist>
+    <button class="btn" id="hsjekk" type="button">Sjekk</button>
+  </div>
+  <div class="report-top"><span class="eyebrow">Helsesjekk</span><span class="report-tag" id="htag">Eksempel</span></div>
+  <div class="report-firm" id="htittel">Rørleggerfirma i en mellomstor norsk by</div>
+  <div class="report-date" id="hdato">Oktober 2026</div>
+  <div id="hinnhold" aria-live="polite">
   <dl>
     <div><dt>Søk i måneden, «rørlegger + din by»</dt><dd>100–1 000</dd></div>
     <div><dt>Klikkpris, toppen av siden</dt><dd>ca. 25–100 kr</dd></div>
@@ -144,6 +152,7 @@ REPORT = """<aside class="report" aria-label="Utsnitt fra en ekte helsesjekk">
     <div class="bar"><span>Nr. 3</span><i style="--w:27%"></i><b>40</b></div>
   </div>
   <div class="report-fix"><span class="eyebrow">Fiks først</span><p>Samme telefonnummer overalt, og en fast rutine for å be om omtaler etter hver jobb.</p></div>
+  </div>
 </aside>"""
 
 
@@ -160,11 +169,11 @@ def tobias():
 
 
 FAQ = [
-    ("Hva er HiFive Studio?", "Vi sørger for at folk som skal pusse opp havner hos deg — og bare deg. Vi kjører annonsene, lager siden de lander på, og sender henvendelsen rett på mobilen din sekunder etter at den kommer inn. Tobias som driver HiFive er rørlegger med 14 år i faget, så vi kjenner bransjen fra innsiden."),
-    ("Hvorfor anbefaler dere minst 3 måneder med annonsering?", "Fordi Google og Meta må lære hvem som er riktig kunde for deg. Måned 1 samler systemet data og finner ut hvilke søk og hvilke folk som faktisk fører til jobber — da er henvendelsene færre og dyrere. Måned 2 begynner vi å kutte det som ikke virker og legge pengene der de gir resultat. Måned 3 er kampanjen innkjørt, og det er da du ser hva den faktisk kan levere. Stopper du etter fire uker, betaler du for læringen uten å få gevinsten. Derfor anbefaler vi 90 dager — men vi har ingen bindingstid, og du kan si opp når du vil."),
-    ("Hvor mange henvendelser kan jeg forvente?", "Regnestykket er enkelt: et klikk på relevante søkeord koster typisk 20–40 kr i Norge, og omtrent 2–3 av 100 som klikker tar faktisk kontakt. Med 12.000 kr i annonsebudsjett får du rundt 350–450 klikk, som gir 8–12 kvalifiserte henvendelser i måneden. Første måned ligger normalt lavere mens kampanjen lærer hvem som er riktig kunde for deg. Det er et regnestykke, ikke et løfte — det eneste vi garanterer står her: gir kampanjen færre enn 6 kvalifiserte henvendelser i perioden dag 31 til dag 90, refunderer vi oppsettet på Kundebooking og Eksklusiv. De første 30 dagene er datainnsamling og teller ikke med. Forutsetter annonsebudsjett fra 12.000 kr/mnd (Kundebooking) eller 18.000 kr/mnd (Eksklusiv) i hele perioden."),
-    ("Hva er en kvalifisert henvendelse — og er det bindingstid?", "En kvalifisert henvendelse er en person med ekte navn og telefonnummer som svarer, innenfor ditt område, som eier boligen eller bestemmer, og som vil ha jobben gjort innen seks måneder. Feil nummer, selgere og folk utenfor området teller ikke. Du betaler fast pris — ingen tillegg per henvendelse, uansett hvor mange du får. Og nei, det er ingen bindingstid og ingen oppsigelsestid: du kan si opp fra måned til måned. Vi jobber med én bedrift per område, så du konkurrerer aldri mot en annen av våre kunder om de samme henvendelsene."),
-    ("Hva er annonsebudsjett, og hvor går pengene?", "Annonsebudsjettet er pengene som kjøper selve visningene på Google og Facebook. Når noen søker etter «bad renovering» i ditt område, er det en auksjon om hvem som vises øverst — og annonsebudsjettet er det du byr med. Du betaler kun når noen faktisk klikker seg inn til deg. 100 % av annonsebudsjettet går til Google og Meta, ikke til oss. Kontoen står i ditt navn med ditt kort, du betaler dem direkte, og du ser hver eneste krone i ditt eget dashbord. De fleste norske byråer tar 10–20 % av annonsebudsjettet i tillegg til månedsprisen. Det gjør ikke vi — du betaler kun fastprisen. Den dekker at vi bygger kampanjen, skriver annonsene, lager landingssiden, setter opp varslingen og justerer alt løpende. To separate regninger, ingen skjulte påslag."),
+    ("Hva er HiFive Studio?", "Vi sørger for at folk som skal pusse opp havner hos deg, og bare deg. Vi kjører annonsene, lager siden de lander på, og sender henvendelsen rett på mobilen din sekunder etter at den kommer inn. Tobias som driver HiFive er rørlegger med 14 år i faget, så vi kjenner bransjen fra innsiden."),
+    ("Hvorfor anbefaler dere minst 3 måneder med annonsering?", "Fordi Google og Meta må lære hvem som er riktig kunde for deg. Måned 1 samler systemet data og finner ut hvilke søk og hvilke folk som faktisk fører til jobber. Da er henvendelsene færre og dyrere. Måned 2 begynner vi å kutte det som ikke virker og legge pengene der de gir resultat. Måned 3 er kampanjen innkjørt, og det er da du ser hva den faktisk kan levere. Stopper du etter fire uker, betaler du for læringen uten å få gevinsten. Derfor anbefaler vi 90 dager. Men vi har ingen bindingstid, og du kan si opp når du vil."),
+    ("Hvor mange henvendelser kan jeg forvente?", "Regnestykket er enkelt: et klikk på relevante søkeord koster typisk 20–40 kr i Norge, og omtrent 2–3 av 100 som klikker tar faktisk kontakt. Med 12.000 kr i annonsebudsjett får du rundt 350–450 klikk, som gir 8–12 kvalifiserte henvendelser i måneden. Første måned ligger normalt lavere mens kampanjen lærer hvem som er riktig kunde for deg. Det er et regnestykke, ikke et løfte. Det eneste vi garanterer står her: gir kampanjen færre enn 6 kvalifiserte henvendelser i perioden dag 31 til dag 90, refunderer vi oppsettet på Kundebooking og Eksklusiv. De første 30 dagene er datainnsamling og teller ikke med. Forutsetter annonsebudsjett fra 12.000 kr/mnd (Kundebooking) eller 18.000 kr/mnd (Eksklusiv) i hele perioden."),
+    ("Hva er en kvalifisert henvendelse, og er det bindingstid?", "En kvalifisert henvendelse er en person med ekte navn og telefonnummer som svarer, innenfor ditt område, som eier boligen eller bestemmer, og som vil ha jobben gjort innen seks måneder. Feil nummer, selgere og folk utenfor området teller ikke. Du betaler fast pris, uten tillegg per henvendelse, uansett hvor mange du får. Og nei, det er ingen bindingstid og ingen oppsigelsestid: du kan si opp fra måned til måned. Vi jobber med én bedrift per område, så du konkurrerer aldri mot en annen av våre kunder om de samme henvendelsene."),
+    ("Hva er annonsebudsjett, og hvor går pengene?", "Annonsebudsjettet er pengene som kjøper selve visningene på Google og Facebook. Når noen søker etter «bad renovering» i ditt område, er det en auksjon om hvem som vises øverst, og annonsebudsjettet er det du byr med. Du betaler kun når noen faktisk klikker seg inn til deg. 100 % av annonsebudsjettet går til Google og Meta, ikke til oss. Kontoen står i ditt navn med ditt kort, du betaler dem direkte, og du ser hver eneste krone i ditt eget dashbord. De fleste norske byråer tar 10–20 % av annonsebudsjettet i tillegg til månedsprisen. Det gjør ikke vi. Du betaler kun fastprisen. Den dekker at vi bygger kampanjen, skriver annonsene, lager landingssiden, setter opp varslingen og justerer alt løpende. To separate regninger, ingen skjulte påslag."),
 ]
 
 OBJ = [
@@ -186,26 +195,17 @@ home = f"""
 <section class="hero">{HAND}<div class="wrap hero-grid">
   <div>
     <div class="eyebrow">Gratis gjennomgang</div>
-    <h1 style="margin-top:18px">Kundene dine googler. <span class="soft">Sørg for at de finner deg.</span></h1>
-    <p class="lead">Vi setter opp Google-annonsene, landingssiden og sporingen for håndverkerbedrifter — og drifter alt videre. Du tar telefonen. Fast månedspris, ingen bindingstid, og annonsebudsjettet betaler du rett til Google.</p>
+    <h1 style="margin-top:18px">Kundene dine googler. Vi sørger for at de finner deg.</h1>
+    <p class="lead">Vi setter opp Google-annonsene, landingssiden og sporingen for håndverkerbedrifter, og drifter alt videre. Du tar telefonen. Fast månedspris, ingen bindingstid, og annonsebudsjettet betaler du rett til Google.</p>
     <div class="hero-actions">
       <a class="btn" href="/kontakt">Be om gratis gjennomgang</a>
       <a class="link" href="{TEL}">Eller ring 91 90 40 10</a>
     </div>
+    <p class="hero-trust">Tobias Svendsen · rørlegger i 14 år · Org.nr 938 365 180</p>
   </div>
   {REPORT}
 </div></section>
 
-<section id="bysok" class="bysok" hidden><div class="wrap">
-  <div class="sec-head"><h2>Hvor mange søker etter rørlegger der du jobber?</h2><p class="lead">Skriv byen din. Tallene er Googles egne, fra de siste tolv månedene.</p></div>
-  <div class="bysok-felt">
-    <label class="sr" for="by">Skriv byen din</label>
-    <input id="by" list="byer" placeholder="Skriv byen din" autocomplete="off" enterkeyhint="search">
-    <datalist id="byer"></datalist>
-    <button class="btn" id="vis" type="button">Vis</button>
-  </div>
-  <div id="bysvar" aria-live="polite"></div>
-</div></section>
 <script src="/js/bysok.js" defer></script>
 
 <section id="helsesjekk"><div class="wrap">
@@ -232,13 +232,13 @@ home = f"""
     </div>
     <figure>
       <img src="/img/rapport.webp" alt="Eksempel på ukesrapport fra HiFive Studio" width="1344" height="752" loading="lazy">
-      <figcaption>Eksempel — illustrasjon av ukesrapporten, ikke ekte tall. Din rapport viser hva du brukte, hvor mange som tok kontakt og hva hver henvendelse kostet.</figcaption>
+      <figcaption>Eksempel: illustrasjon av ukesrapporten, ikke ekte tall. Din rapport viser hva du brukte, hvor mange som tok kontakt og hva hver henvendelse kostet.</figcaption>
     </figure>
   </div>
 </div></section>
 
 <section><div class="wrap">
-  <div class="sec-head"><h2>Priser og pakker</h2><p class="lead">Fast månedspris, ingen bindingstid. Annonsebudsjettet betaler du rett til Google og Meta — vi tar ingen prosent.</p></div>
+  <div class="sec-head"><h2>Priser og pakker</h2><p class="lead">Fast månedspris, ingen bindingstid. Annonsebudsjettet betaler du rett til Google og Meta . Vi tar ingen prosent.</p></div>
   <div class="prices">
     <div class="price"><h3>Synlig</h3><div class="meta">For deg under 4 mill. i omsetning</div><div class="amt">1.490 kr/mnd</div><div class="meta">Oppsett 4.900 kr · ingen annonser</div>
       <ul><li>Google Bedriftsprofil</li><li>Gule Sider, 1881, Proff, Mittanbud</li><li>QR og rutine for anmeldelser</li><li>Kvartalsvis gjennomgang</li></ul></div>
@@ -250,7 +250,7 @@ home = f"""
       <ul><li>Alt i Eksklusiv</li><li>Flere områder</li><li>Månedlig strategimøte</li><li>Egen kontaktperson</li></ul></div>
   </div>
   {TRUST}
-  <p style="margin-top:28px"><a class="link" href="/priser-og-pakker">Se alle detaljer — priser og pakker →</a></p>
+  <p style="margin-top:28px"><a class="link" href="/priser-og-pakker">Se alle priser og pakker →</a></p>
 </div></section>
 
 <section id="faq"><div class="wrap">
@@ -264,17 +264,17 @@ home = f"""
 
 # ---------- Tjenester ----------
 TJ = [
-    ("Google Bedriftsprofil", "Vi setter opp og verifiserer profilen din på Google Maps og Søk, med riktige kategorier, åpningstider og tjenester. Så holder vi den aktiv med jevnlige innlegg, slik at du dukker opp når folk i området søker etter det du driver med. Det samme oppsettet gjør deg lesbar for ChatGPT og Googles AI-modus — og vi måler hvor mange som finner deg den veien."),
-    ("Google Ads og Meta-annonser", "Vi bygger og styrer annonsene som vises når folk i området ditt søker etter tjenestene dine. Vi skriver annonsetekstene, velger søkeordene og justerer løpende. Annonsebudsjettet betaler du direkte til Google og Meta — vi tar ingen prosent av det."),
+    ("Google Bedriftsprofil", "Vi setter opp og verifiserer profilen din på Google Maps og Søk, med riktige kategorier, åpningstider og tjenester. Så holder vi den aktiv med jevnlige innlegg, slik at du dukker opp når folk i området søker etter det du driver med. Det samme oppsettet gjør deg lesbar for ChatGPT og Googles AI-modus, og vi måler hvor mange som finner deg den veien."),
+    ("Google Ads og Meta-annonser", "Vi bygger og styrer annonsene som vises når folk i området ditt søker etter tjenestene dine. Vi skriver annonsetekstene, velger søkeordene og justerer løpende. Annonsebudsjettet betaler du direkte til Google og Meta . Vi tar ingen prosent av det."),
     ("Landingsside som gir henvendelser", "En side laget for én ting: at den som klikker faktisk tar kontakt. Kort, tydelig og bygget for mobil, med et skjema som kvalifiserer kunden før du bruker tid på dem."),
-    ("Varsel under 30 sekunder", "Når noen fyller ut skjemaet, får du SMS og e-post med en gang — navn, telefon, adresse og hva det gjelder. Du ringer tilbake mens de fortsatt sitter med telefonen i hånda, før konkurrenten rekker det."),
-    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse fra jobbene dine — vi tar resten."),
+    ("Varsel under 30 sekunder", "Når noen fyller ut skjemaet, får du SMS og e-post med en gang: navn, telefon, adresse og hva det gjelder. Du ringer tilbake mens de fortsatt sitter med telefonen i hånda, før konkurrenten rekker det."),
+    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse fra jobbene dine . Vi tar resten."),
     ("Økonomisk rapport", "Du får tallene i kroner, ikke klikk og visninger: hva som er brukt, hvor mange henvendelser det ga, og hva hver henvendelse kostet."),
 ]
 tjenester = f"""
 <section class="page-head"><div class="wrap">
   <h1>Dette gjør vi</h1>
-  <p class="lead">Vi sørger for at folk som skal pusse opp havner hos deg — og bare deg — og at de får svar før konkurrenten rekker å ringe tilbake. Her er delene vi setter sammen.</p>
+  <p class="lead">Vi sørger for at folk som skal pusse opp havner hos deg og bare deg, og at de får svar før konkurrenten rekker å ringe tilbake. Her er delene vi setter sammen.</p>
 </div></section>
 <section style="padding-top:0"><div class="wrap">
   <div class="grid g2">{''.join(f'<div class="card"><h3>{t}</h3><p>{d}</p></div>' for t, d in TJ)}</div>
@@ -291,48 +291,48 @@ def pkg(name, desc, amt, paras, pop=False):
     return f'<div class="{cls}">{tag}<div class="pkg-head"><h2>{name}</h2><div class="amt">{amt}</div></div><p class="desc">{desc}</p>{body}</div>'
 
 PK = [
-    ("Synlig", "Bedriften blir synlig på Google og Google Maps og lett å finne — satt opp én gang, målt hvert kvartal, ingen annonser.", "1.490 kr/mnd", [
+    ("Synlig", "Bedriften blir synlig på Google og Google Maps og lett å finne. Satt opp én gang, målt hvert kvartal, ingen annonser.", "1.490 kr/mnd", [
         "<strong>Oppsett 4.900 kr.</strong> Ingen bindingstid og ingen oppsigelsestid.",
         "Google Bedriftsprofil satt opp, verifisert og optimalisert · riktig kategori, område, åpningstider og tjenesteliste på Google Maps · samme navn, adresse og telefon på Gule Sider, 1881, Proff og Mittanbud · bilder lagt inn og navngitt riktig · kvartalsvis gjennomgang med rapport på visninger, klikk og anrop fra Google.",
-        "<strong>Kartmåling.</strong> Vi måler hvor du faktisk vises i Google Maps, punkt for punkt rundt området ditt — ikke bare fra din egen adresse. Målt ved oppstart, og på nytt i hver kvartalsrapport, så du ser kartet før og etter.",
-        "<strong>Anmeldelser.</strong> QR-kode og SMS-lenke for Google-anmeldelser, og en fast rutine: samme lenke til alle kunder etter fullført jobb, én påminnelse. Ingen siling — det er både Googles og Forbrukertilsynets regel, og det er det som gjør anmeldelsene troverdige.",
-        "<strong>AI-søk er med.</strong> Det samme oppsettet gjør firmaet ditt lesbart for ChatGPT og Googles AI-modus: komplett profil med riktig kategori og område, ferske anmeldelser, samme navn, adresse og telefon overalt. Vi lover ingen plassering — ingen kan det — men vi måler hvor mange som finner deg via AI-assistenter, og det står i rapporten din.",
+        "<strong>Kartmåling.</strong> Vi måler hvor du faktisk vises i Google Maps, punkt for punkt rundt området ditt, ikke bare fra din egen adresse. Målt ved oppstart, og på nytt i hver kvartalsrapport, så du ser kartet før og etter.",
+        "<strong>Anmeldelser.</strong> QR-kode og SMS-lenke for Google-anmeldelser, og en fast rutine: samme lenke til alle kunder etter fullført jobb, én påminnelse. Ingen siling. Det er både Googles og Forbrukertilsynets regel, og det er det som gjør anmeldelsene troverdige.",
+        "<strong>AI-søk er med.</strong> Det samme oppsettet gjør firmaet ditt lesbart for ChatGPT og Googles AI-modus: komplett profil med riktig kategori og område, ferske anmeldelser, samme navn, adresse og telefon overalt. Vi lover ingen plassering, for ingen kan det. Men vi måler hvor mange som finner deg via AI-assistenter, og det står i rapporten din.",
         "Ingen annonsekostnad. Ingen løpende arbeid for deg.",
-        "<strong>Passer for:</strong> deg som driver alene eller med én ansatt, har nok å gjøre, men vil at de som søker skal finne deg — ikke konkurrenten.",
+        "<strong>Passer for:</strong> deg som driver alene eller med én ansatt, har nok å gjøre, men vil at de som søker skal finne deg, ikke konkurrenten.",
     ]),
-    ("Synlig Start", "Nystartet? Alt på plass på én dag — Google, Gule Sider, 1881, Mittanbud, Finn og Facebook — så du blir funnet fra første uke.", "990 kr/mnd", [
+    ("Synlig Start", "Nystartet? Alt på plass på én dag: Google, Gule Sider, 1881, Mittanbud, Finn og Facebook. Så blir du funnet fra første uke.", "990 kr/mnd", [
         "<strong>For bedrifter under ett år.</strong> Oppsett 9.990 kr hvis du har logo fra før, 13.990 kr hvis vi lager logoen for deg. Ingen bindingstid og ingen oppsigelsestid. For bedrifter registrert de siste 12 månedene.",
         "Alt i Synlig · Google Bedriftsprofil opprettet fra null og verifisert · profil på Finn.no, Mittanbud, Gule Sider, 1881 og Proff med samme navn, adresse og telefon overalt · Facebook-side · e-postsignatur og logofil · mal for å be om anmeldelse · kartmåling ved oppstart.",
-        "<strong>Hvorfor høyt oppsett og lav måned:</strong> jobben er å få alt riktig fra start. Etterpå skal det gå av seg selv — og en nystartet bedrift skal ikke betale for mer enn den trenger i måned to.",
+        "<strong>Hvorfor høyt oppsett og lav måned:</strong> jobben er å få alt riktig fra start. Etterpå skal det gå av seg selv, og en nystartet bedrift skal ikke betale for mer enn den trenger i måned to.",
         "Nettside og online booking er ikke med. Det legges til når du er klar, som en del av Kundebooking.",
         "<strong>Passer for:</strong> deg som nettopp har startet og vil bruke tiden på jobbene, ikke på registreringer.",
     ]),
     ("Kundebooking", "For deg med kapasitet til flere jobber. Kvalifiserte henvendelser rett på mobilen, og kun du i ditt område.", "5.900 kr/mnd", [
-        "<strong>Oppsett 9.900 kr.</strong> Fast pris — ingen tillegg per henvendelse. Ingen bindingstid og ingen oppsigelsestid. Vi anbefaler minst 3 måneder — det er tiden Google trenger for å lære hvem som er riktig kunde for deg.",
-        "Annonsebudsjettet bestemmer du selv, og det betales direkte til Google på din egen konto. Vi tar ingen prosent av det. Vi anbefaler fra 12.000 kr/mnd, og det er forutsetningen for garantien under — men du kan starte lavere hvis du vil prøve deg fram. Da sier vi bare tydelig fra at garantien ikke gjelder.",
-        "Alt i Synlig · Google Ads-søkekampanje bygget og driftet av oss · landingsside laget for å gi henvendelser · skjema som kvalifiserer · varsel på SMS og e-post · 2 Google-innlegg i måneden · månedlig rapport i kroner · eksklusivitet i ditt område — vi jobber kun med én bedrift per område.",
-        "<strong>Hva 12.000 kr typisk gir:</strong> 8–12 kvalifiserte henvendelser i måneden når kampanjen er innkjørt. Det er et regnestykke, ikke et løfte — det eneste vi garanterer står under. Vi teller kun de som faktisk er aktuelle: eier boligen, riktig område, skal ha jobben gjort. Første måned ligger normalt lavere mens kampanjen lærer.",
+        "<strong>Oppsett 9.900 kr.</strong> Fast pris, uten tillegg per henvendelse. Ingen bindingstid og ingen oppsigelsestid. Vi anbefaler minst 3 måneder. Det er tiden Google trenger for å lære hvem som er riktig kunde for deg.",
+        "Annonsebudsjettet bestemmer du selv, og det betales direkte til Google på din egen konto. Vi tar ingen prosent av det. Vi anbefaler fra 12.000 kr/mnd, og det er forutsetningen for garantien under. Men du kan starte lavere hvis du vil prøve deg fram. Da sier vi bare tydelig fra at garantien ikke gjelder.",
+        "Alt i Synlig · Google Ads-søkekampanje bygget og driftet av oss · landingsside laget for å gi henvendelser · skjema som kvalifiserer · varsel på SMS og e-post · 2 Google-innlegg i måneden · månedlig rapport i kroner · eksklusivitet i ditt område: vi jobber kun med én bedrift per område.",
+        "<strong>Hva 12.000 kr typisk gir:</strong> 8–12 kvalifiserte henvendelser i måneden når kampanjen er innkjørt. Det er et regnestykke, ikke et løfte. Det eneste vi garanterer står under. Vi teller kun de som faktisk er aktuelle: eier boligen, riktig område, skal ha jobben gjort. Første måned ligger normalt lavere mens kampanjen lærer.",
         "<strong>Vår garanti:</strong> gir kampanjen færre enn 6 kvalifiserte henvendelser i perioden dag 31–90, refunderer vi oppsettet. De første 30 dagene er datainnsamling og teller ikke. Forutsetter annonsebudsjett på minst 12.000 kr/mnd i hele perioden.",
         "<strong>Passer for:</strong> deg som har folk nok til å ta flere jobber, og som vil ha jevn tilgang framfor tilfeldige forespørsler. <strong>Passer sammen med:</strong> Sosiale medier.",
     ]),
     ("Eksklusiv", "To områder, Google og Meta, større budsjett og flere henvendelser.", "9.900 kr/mnd", [
-        "<strong>Oppsett 14.900 kr.</strong> Fast pris — ingen tillegg per henvendelse. Ingen bindingstid og ingen oppsigelsestid. Annonsebudsjett fra 18.000 kr/mnd betales direkte til Google og Meta, på dine egne kontoer. Vi tar ingen prosent av det.",
+        "<strong>Oppsett 14.900 kr.</strong> Fast pris, uten tillegg per henvendelse. Ingen bindingstid og ingen oppsigelsestid. Annonsebudsjett fra 18.000 kr/mnd betales direkte til Google og Meta, på dine egne kontoer. Vi tar ingen prosent av det.",
         "Alt i Kundebooking, men for to områder · Google Ads + Meta-annonser · flere kampanjer · 4 Google-innlegg i måneden · ukentlig rapport i kroner og kvartalsvis gjennomgang.",
         "<strong>Hva 18.000 kr typisk gir:</strong> 12–18 kvalifiserte henvendelser i måneden når kampanjene er innkjørt. Et regnestykke, ikke et løfte.",
         "<strong>Vår garanti:</strong> gir kampanjene færre enn 6 kvalifiserte henvendelser i perioden dag 31–90, refunderer vi oppsettet. De første 30 dagene er datainnsamling og teller ikke. Forutsetter annonsebudsjett på minst 18.000 kr/mnd i hele perioden.",
         "<strong>Passer for:</strong> deg som dekker flere områder og har kapasitet til volum.",
     ]),
     ("Pro", "For de største. Flere områder, flere kampanjer og tettest oppfølging. På forespørsel.", "fra 14.900 kr/mnd", [
-        "<strong>Oppsett etter avtale.</strong> Fast pris — ingen tillegg per henvendelse. Ingen bindingstid og ingen oppsigelsestid. Annonsebudsjett fra 25.000 kr/mnd betales direkte.",
+        "<strong>Oppsett etter avtale.</strong> Fast pris, uten tillegg per henvendelse. Ingen bindingstid og ingen oppsigelsestid. Annonsebudsjett fra 25.000 kr/mnd betales direkte.",
         "Alt i Eksklusiv · flere områder · hjelp til å samle Google-anmeldelser etter fullført jobb · ukentlig rapport · månedlig strategimøte · egen kontaktperson.",
-        "<strong>Passer for:</strong> bedrifter med flere lag og kapasitet til å ta imot volum. Vi setter opp Pro etter en gjennomgang av bedriften — ta kontakt.",
+        "<strong>Passer for:</strong> bedrifter med flere lag og kapasitet til å ta imot volum. Vi setter opp Pro etter en gjennomgang av bedriften. Ta kontakt.",
     ]),
-    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse — vi tar resten.", "3.990 kr/mnd", [
-        "<strong>Oppsett 4.900 kr.</strong> Tillegg — kan legges til alle pakker. Ingen bindingstid.",
+    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse . Vi tar resten.", "3.990 kr/mnd", [
+        "<strong>Oppsett 4.900 kr.</strong> Tillegg som kan legges til alle pakker. Ingen bindingstid.",
         "8 innlegg i måneden på Facebook og 8 på Instagram · vi skriver all tekst · vi planlegger og publiserer på tidspunktene som gir mest · løpende drift av kontoene.",
-        "<strong>Slik fungerer det:</strong> Du sender oss bilder og videoer fra jobbene dine, sammen med en kort beskrivelse av hva som er gjort — for eksempel «komplett bad på Majorstuen, nytt røropplegg og varmekabler». Noen setninger holder. Mobilbilder holder fint.",
+        "<strong>Slik fungerer det:</strong> Du sender oss bilder og videoer fra jobbene dine, sammen med en kort beskrivelse av hva som er gjort, for eksempel «komplett bad på Majorstuen, nytt røropplegg og varmekabler». Noen setninger holder. Mobilbilder holder fint.",
         "Send materiale annenhver uke eller én gang i måneden. Vi bruker samme materiale på begge kanaler. Produksjon av nytt bilde- og videomateriale er ikke inkludert.",
-        "<strong>Passer sammen med:</strong> Kundebooking og oppover — innleggene gir mest verdi når folk allerede finner deg.",
+        "<strong>Passer sammen med:</strong> Kundebooking og oppover. Innleggene gir mest verdi når folk allerede finner deg.",
     ]),
 ]
 priser = f"""
@@ -351,7 +351,7 @@ priser = f"""
 kontakt = f"""
 <section class="page-head"><div class="wrap">
   <h1>Kontakt oss</h1>
-  <p class="lead">Ring 91 90 40 10, eller send en e-post — vi svarer innen én virkedag.</p>
+  <p class="lead">Ring 91 90 40 10, eller send en e-post. Vi svarer innen én virkedag.</p>
 </div></section>
 <section style="padding-top:0"><div class="wrap">
   <div class="contact-grid">
@@ -370,16 +370,16 @@ kontakt = f"""
 omoss = f"""
 <section class="page-head"><div class="wrap">
   <h1>Om HiFive Studio</h1>
-  <p class="lead">Vi gjør håndverkerbedrifter synlige der kundene faktisk leter — og drifter det videre, så du slipper.</p>
+  <p class="lead">Vi gjør håndverkerbedrifter synlige der kundene faktisk leter, og drifter det videre, så du slipper.</p>
 </div></section>
 <section style="padding-top:0"><div class="wrap">
-  <div class="prose"><p style="font-size:19px">HiFive Studio er startet av Tobias Svendsen — rørlegger med 14 års erfaring fra håndverksbransjen. Jeg vet hvordan det er å drive en liten bedrift der jobben tar all tid, og nettside, Google og sosiale medier blir liggende. Derfor bygde jeg HiFive: vi setter opp synligheten din én gang, og drifter den etterpå — så du kan bruke tiden på kundene dine i stedet for på skjermen.</p></div>
+  <div class="prose"><p style="font-size:19px">HiFive Studio er startet av Tobias Svendsen, rørlegger med 14 års erfaring fra håndverksbransjen. Jeg vet hvordan det er å drive en liten bedrift der jobben tar all tid, og nettside, Google og sosiale medier blir liggende. Derfor bygde jeg HiFive: vi setter opp synligheten din én gang, og drifter den etterpå, så du kan bruke tiden på kundene dine i stedet for på skjermen.</p></div>
   <h2 style="margin:64px 0 28px">Hvorfor velge oss?</h2>
   <div class="grid g2">
-    <div class="card"><h3>Erfaring</h3><p>Vi kjenner bransjen din fra innsiden — ikke bare fra et byråkontor.</p></div>
-    <div class="card"><h3>Fast pris</h3><p>Fast månedspris, ingen bindingstid — og vi tar aldri prosent av annonsebudsjettet ditt.</p></div>
+    <div class="card"><h3>Erfaring</h3><p>Vi kjenner bransjen din fra innsiden, ikke bare fra et byråkontor.</p></div>
+    <div class="card"><h3>Fast pris</h3><p>Fast månedspris, ingen bindingstid, og vi tar aldri prosent av annonsebudsjettet ditt.</p></div>
     <div class="card"><h3>Raskt</h3><p>Fra ja til live på ti arbeidsdager. Du bruker under en time på oppstarten.</p></div>
-    <div class="card"><h3>Fleksibelt</h3><p>Fra Google-profil og annonser til sosiale medier — én kontaktperson, én faktura.</p></div>
+    <div class="card"><h3>Fleksibelt</h3><p>Fra Google-profil og annonser til sosiale medier. Én kontaktperson, én faktura.</p></div>
   </div>
 </div></section>
 {cta()}
@@ -419,12 +419,12 @@ personvern = f"""
 <h2>Hvem vi deler opplysninger med</h2>
 <p>Vi bruker følgende leverandører som behandler opplysninger på våre vegne (databehandlere):</p>
 <ul>
-<li>GitHub — drift av nettsiden</li>
-<li>Google (Workspace, Ads, Bedriftsprofil) — e-post og annonsering</li>
-<li>Meta — annonsering, når det inngår i tjenesten</li>
-<li>Zoho Bigin — kundeoppfølging (CRM)</li>
-<li>Tripletex — fakturering og regnskap</li>
-<li>Vipps — betaling, når det er avtalt</li>
+<li>GitHub: drift av nettsiden</li>
+<li>Google (Workspace, Ads, Bedriftsprofil): e-post og annonsering</li>
+<li>Meta: annonsering, når det inngår i tjenesten</li>
+<li>Zoho Bigin: kundeoppfølging (CRM)</li>
+<li>Tripletex: fakturering og regnskap</li>
+<li>Vipps: betaling, når det er avtalt</li>
 </ul>
 <p>Noen av disse leverandørene behandler data utenfor EØS. Overføring skjer på grunnlag av EU-kommisjonens standardkontrakter eller tilsvarende godkjente mekanismer.</p>
 <p>Vi selger aldri personopplysninger, og vi deler dem ikke med andre enn de som er nødvendige for å levere tjenesten.</p>

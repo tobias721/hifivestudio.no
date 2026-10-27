@@ -37,9 +37,9 @@ img{max-width:100%;height:auto;display:block}
 .menu-btn{display:none;background:none;border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 12px;font:inherit;font-size:14px}
 
 /* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:11px;
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:8px;border:0;cursor:pointer;font-family:inherit;
   background:var(--blue);color:#fff;text-decoration:none;font-weight:600;font-size:16px;
-  box-shadow:0 0 0 1px rgba(255,255,255,.18) inset;transition:background .15s}
+  transition:background .15s}
 .btn:hover{background:var(--blue-hi)}
 .btn.small{padding:9px 16px;font-size:14px;text-transform:uppercase;letter-spacing:.02em}
 .btn.ghost{background:transparent;box-shadow:0 0 0 1px var(--line) inset}
@@ -64,7 +64,7 @@ section{padding:88px 0}
 .hero .lead{margin:26px 0 34px}
 .hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:22px}
 .hero-grid{position:relative;display:grid;grid-template-columns:1.25fr .85fr;gap:56px;align-items:center}
-.hero-hand{position:absolute;right:-6%;top:-8%;height:125%;width:auto;color:var(--blue);opacity:.32;pointer-events:none}
+.hero-hand{position:absolute;left:-7%;top:-4%;height:92%;width:auto;color:var(--blue);opacity:.25;pointer-events:none}
 .hero-hand path{vector-effect:non-scaling-stroke}
 .sec-head{margin-bottom:40px;max-width:720px}
 .sec-head p{margin-top:14px}
@@ -94,7 +94,7 @@ section{padding:88px 0}
 .health{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
 .hcard{border:1px solid var(--line);border-radius:var(--radius);background:var(--glass);padding:20px;display:flex;flex-direction:column}
 .hcard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.hnum{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--blue-ink)}
+.hnum{font-weight:600;font-size:15px;letter-spacing:.04em;color:var(--blue-ink)}
 .ex{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);border:1px solid var(--line);border-radius:99px;padding:2px 8px}
 .hcard h3{font-size:17px;margin-bottom:12px}
 .hval{font-family:var(--serif);font-size:30px;line-height:1.05;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
@@ -203,7 +203,7 @@ footer{border-top:1px solid var(--line);margin-top:64px;padding:56px 0 40px;font
   .nav-links .btn{margin-top:6px}
   section{padding:60px 0}
   .hero{padding:64px 0 52px}
-  .hero-hand{height:70%;top:2%;right:-30%;opacity:.22}
+  .hero-hand{display:none}   /* N4: aldri over tekst på mobil */
   .health{grid-template-columns:1fr}
   .report{padding:20px}
   .bar{grid-template-columns:104px 1fr 30px}
@@ -214,11 +214,13 @@ footer{border-top:1px solid var(--line);margin-top:64px;padding:56px 0 40px;font
 .pop-pkg{border-color:rgba(47,91,255,.7);box-shadow:0 0 0 1px rgba(47,91,255,.4)}
 .pop-pkg .tag{display:inline-block;margin-bottom:14px}
 
-/* N2 27.10: by-søk under heroen */
-.bysok .sec-head{margin-bottom:20px}
-.bysok-felt{display:flex;gap:10px;flex-wrap:wrap;max-width:560px}
-.bysok-felt input{flex:1 1 220px;min-height:48px;padding:0 16px;font:inherit;font-size:16px;color:var(--ink);background:#121318;border:1px solid var(--line);border-radius:999px}
-.bysok-felt input:focus{outline:2px solid var(--ink-soft);outline-offset:2px}
-.bysok-kort{max-width:560px;margin-top:20px}
-.bysok-kort .hero-actions{margin-top:18px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* N4 27.10: søk i helsesjekk-kortet, tillitslinje */
+.report-sok{display:flex;gap:8px;margin:0 0 18px}
+.report-sok input{flex:1;min-width:0;min-height:44px;padding:0 14px;font:inherit;font-size:16px;color:var(--ink);background:#0b0c0e;border:1px solid var(--line);border-radius:8px}
+.report-sok input:focus{outline:2px solid var(--blue);outline-offset:1px}
+.report-sok .btn{padding:10px 18px}
+.report-kilde{color:var(--ink-mute);font-size:12px;margin:10px 0 0}
+.report-fix .btn{margin-top:12px;width:100%}
+.hero-trust{margin:22px 0 0;font-size:13px;color:var(--ink-mute)}
