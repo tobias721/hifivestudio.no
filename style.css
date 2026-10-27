@@ -1,14 +1,20 @@
+/* N5 27.10: fonter fra egen server (/fonts/, latin) – ingen forespørsel til Google Fonts fra besøkende */
+@font-face{font-family:"DM Sans";font-style:normal;font-weight:400 600;font-display:swap;src:url(/fonts/dm-sans.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/fraunces-400.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-style:italic;font-weight:400;font-display:swap;src:url(/fonts/fraunces-400-italic.woff2) format("woff2")}
 :root{
-  --bg:#0b0c0e;
-  --ink:rgba(246,243,240,.9);
-  --ink-soft:rgba(246,243,240,.66);
-  --ink-mute:rgba(246,243,240,.56);
-  --line:rgba(246,243,240,.12);
-  --glass:rgba(246,243,240,.04);
+  /* N5 27.10: lys side (Visionmedia-retning). Hero-kortet overstyrer til mørkt under .report */
+  --bg:#ffffff;
+  --bg-alt:#f6f7f9;
+  --ink:#0f1623;
+  --ink-soft:#4b5563;
+  --ink-mute:#5b6472;
+  --line:#e6e8ec;
+  --glass:#ffffff;
   --blue:#2f5bff;
   --blue-hi:#4b73ff;
-  --blue-ink:#8aa4ff;
-  --radius:14px;
+  --blue-ink:#2f5bff;
+  --radius:16px;   /* N5: kort 16 px, knapper 10 px */
   --max:1120px;
   --serif:"Fraunces",Georgia,"Times New Roman",serif;
 }
@@ -27,9 +33,9 @@ img{max-width:100%;height:auto;display:block}
 .nav{position:sticky;top:16px;z-index:10;margin:16px auto 0;max-width:min(860px,calc(100vw - 32px));
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   padding:8px 8px 8px 16px;border:1px solid var(--line);border-radius:14px;
-  background:rgba(20,21,26,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  background:rgba(255,255,255,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:500;font-size:17px;white-space:nowrap}
-.logo img{width:22px;height:26px;filter:invert(1) opacity(.9)}
+.logo img{width:22px;height:26px;opacity:.9}   /* N5: svart på lys side (var invert for mørk side) */
 .nav-links{display:flex;align-items:center;gap:4px;list-style:none;margin:0;padding:0}
 .nav-links a{display:block;padding:8px 12px;border-radius:9px;text-decoration:none;font-size:14px;font-weight:500;
   text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
@@ -37,7 +43,7 @@ img{max-width:100%;height:auto;display:block}
 .menu-btn{display:none;background:none;border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 12px;font:inherit;font-size:14px}
 
 /* Buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:8px;border:0;cursor:pointer;font-family:inherit;
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:10px;border:0;cursor:pointer;font-family:inherit;
   background:var(--blue);color:#fff;text-decoration:none;font-weight:600;font-size:16px;
   transition:background .15s}
 .btn:hover{background:var(--blue-hi)}
@@ -73,7 +79,7 @@ section{padding:88px 0}
 .report{border:1px solid var(--line);border-radius:var(--radius);background:#121318;padding:24px;font-size:14px;
   font-variant-numeric:tabular-nums;box-shadow:0 24px 60px rgba(0,0,0,.45)}
 .report-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.report-tag{font-size:12px;color:var(--ink-mute)}
+.report-tag{font-size:13px;color:var(--ink-mute)}
 .report-firm{font-family:var(--serif);font-size:24px;line-height:1.2;margin-top:14px}
 .report-date{color:var(--ink-mute);margin-bottom:14px}
 .report dl{margin:0;border-top:1px solid var(--line)}
@@ -95,7 +101,7 @@ section{padding:88px 0}
 .hcard{border:1px solid var(--line);border-radius:var(--radius);background:var(--glass);padding:20px;display:flex;flex-direction:column}
 .hcard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
 .hnum{font-weight:600;font-size:15px;letter-spacing:.04em;color:var(--blue-ink)}
-.ex{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);border:1px solid var(--line);border-radius:99px;padding:2px 8px}
+.ex{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);border:1px solid var(--line);border-radius:99px;padding:2px 8px}
 .hcard h3{font-size:17px;margin-bottom:12px}
 .hval{font-family:var(--serif);font-size:30px;line-height:1.05;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
 .hunit{font-size:14px;color:var(--ink-soft);margin:4px 0 14px}
@@ -133,7 +139,7 @@ figcaption{font-size:14px;color:var(--ink-mute);margin-top:12px}
 .prices{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .price{border:1px solid var(--line);border-radius:var(--radius);background:var(--glass);padding:26px;display:flex;flex-direction:column;gap:12px}
 .price.pop{border-color:rgba(47,91,255,.7);box-shadow:0 0 0 1px rgba(47,91,255,.4)}
-.tag{align-self:flex-start;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--blue);color:#fff;padding:4px 10px;border-radius:99px}
+.tag{align-self:flex-start;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;background:var(--blue);color:#fff;padding:4px 10px;border-radius:99px}
 .price .amt{font-size:30px;font-weight:600;letter-spacing:-.02em}
 .price .meta{font-size:14px;color:var(--ink-mute)}
 .price ul{margin:4px 0 0;padding-left:18px;color:var(--ink-soft);font-size:15px}
@@ -217,10 +223,127 @@ footer{border-top:1px solid var(--line);margin-top:64px;padding:56px 0 40px;font
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* N4 27.10: søk i helsesjekk-kortet, tillitslinje */
+[hidden]{display:none !important}   /* f.eks. by-søket uten JS: display:flex skal ikke overstyre hidden */
 .report-sok{display:flex;gap:8px;margin:0 0 18px}
 .report-sok input{flex:1;min-width:0;min-height:44px;padding:0 14px;font:inherit;font-size:16px;color:var(--ink);background:#0b0c0e;border:1px solid var(--line);border-radius:8px}
 .report-sok input:focus{outline:2px solid var(--blue);outline-offset:1px}
 .report-sok .btn{padding:10px 18px}
-.report-kilde{color:var(--ink-mute);font-size:12px;margin:10px 0 0}
+.report-kilde{color:var(--ink-mute);font-size:13px;margin:10px 0 0}
 .report-fix .btn{margin-top:12px;width:100%}
 .hero-trust{margin:22px 0 0;font-size:13px;color:var(--ink-mute)}
+
+/* ---------- N5 27.10: knapper, lenker og kort med liv (rolig ved redusert bevegelse) ---------- */
+.btn,.xcard summary{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn{min-height:48px;transition:transform .18s cubic-bezier(.2,.7,.2,1),background-color .15s,box-shadow .18s,border-color .15s}
+.btn.small{min-height:0}
+.btn:active{transform:translateY(0) scale(.985)}
+.btn:focus-visible,.link:focus-visible,.nav-links a:focus-visible,.xcard summary:focus-visible,.report-sok input:focus-visible{outline:2px solid var(--blue-hi);outline-offset:3px}
+.btn-arrow{display:inline-block;transition:transform .18s cubic-bezier(.2,.7,.2,1)}
+@media (any-hover:hover){
+  .btn:hover{transform:translateY(-1px);background:var(--blue-hi)}
+  .btn:hover .btn-arrow{transform:translateX(3px)}
+  .btn.ghost:hover{background:transparent;box-shadow:0 0 0 1px #aab1bc inset}
+  .card,.hcard,.price,.step,.pkg{transition:transform .18s cubic-bezier(.2,.7,.2,1),border-color .18s,box-shadow .18s}
+  .card:hover,.hcard:hover,.price:hover,.pkg:hover{border-color:#d3d7de;transform:translateY(-2px);box-shadow:0 12px 30px -18px rgba(15,22,35,.25)}
+}
+/* Nav: understrek som vokser fra venstre, aktiv side alltid understreket, bakgrunn etter scroll */
+.nav-links a:not(.btn){position:relative}
+.nav-links a:not(.btn)::after{content:"";position:absolute;left:12px;right:12px;bottom:4px;height:1px;background:currentColor;
+  transform:scaleX(0);transform-origin:left;transition:transform .16s ease}
+.nav-links a[aria-current="page"]::after{transform:scaleX(1)}
+@media (any-hover:hover){.nav-links a:not(.btn):hover{background:transparent}.nav-links a:not(.btn):hover::after{transform:scaleX(1)}}
+.nav{transition:background-color .2s,box-shadow .2s}
+.nav.scrolled{background:rgba(255,255,255,.96);box-shadow:0 8px 24px -12px rgba(15,22,35,.25)}
+
+/* Kort som kan åpnes («les mer») – <details>, virker uten JS */
+.xcard{padding:0}
+/* Når ett kort er åpent, skal ikke naboen i samme rad strekkes like høyt (tom boks). Lukket: like høye kort. */
+.grid:has(> .xcard[open]),.grid:has(> .xcard > details[open]),.health:has(details[open]){align-items:start}
+.xcard summary{list-style:none;cursor:pointer;display:flex;gap:16px;align-items:flex-start;justify-content:space-between;padding:24px 26px;border-radius:var(--radius)}
+.xcard summary::-webkit-details-marker{display:none}
+.xcard h3{margin:0 0 6px}
+.xcard-ingress{color:var(--ink-soft);margin:0;font-size:16px}
+.chev{flex:none;width:20px;height:20px;margin-top:4px;color:var(--ink-soft);transition:transform .2s ease}
+details[open] > summary .chev{transform:rotate(180deg)}
+.xcard-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s ease}
+details[open] > .xcard-body{grid-template-rows:1fr}
+.xcard-inner{overflow:hidden}
+.xcard-inner > div{padding:0 26px 24px;color:var(--ink-soft);font-size:15px}
+.xcard-inner h4{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin:16px 0 6px;font-weight:600}
+.xcard-inner ul{margin:0;padding-left:18px}
+.xcard-inner p{margin:0}
+.xcard-inner .link{display:inline-block;margin-top:14px;color:var(--ink)}
+.hcard.xcard summary{padding:20px;display:block}
+.hcard.xcard .hcard-top .chev{margin:0}
+.hcard.xcard .xcard-inner > div{padding:0 20px 20px}
+.g3 .xcard:first-child{grid-column:span 2}   /* N5 5.3: ikke seks like kort */
+@media (max-width:980px){.g3 .xcard:first-child{grid-column:auto}}
+
+/* Rolig innsving når man scroller – bare når JS er på (html.js), aldri i heroen */
+html.js [data-reveal]{opacity:0;transform:translateY(10px);transition:opacity .32s ease,transform .32s ease;transition-delay:var(--d,0ms)}
+html.js [data-reveal].in{opacity:1;transform:none}
+
+/* Hero-kortet etter søk */
+.report-dag{color:var(--ink-soft);font-size:14px;margin:10px 0 0}
+.report-igjen{display:inline-block;margin-top:12px;font-size:14px;color:var(--ink-soft);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:inherit}
+@media (min-width:981px){.report{min-height:var(--hkort-h,0)}}
+
+/* Fast bunnlinje på mobil (skjult på desktop) */
+.sticky-cta{display:none}
+@media (max-width:760px){
+  .sticky-cta{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.96);border-top:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    transform:translateY(110%);transition:transform .22s ease}
+  .sticky-cta.vis{transform:none}
+  .sticky-cta .btn{flex:1;min-height:48px;padding:10px}
+}
+
+/* Redusert bevegelse: alt rolig, ingen løft eller krymp */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important;scroll-behavior:auto !important}
+  .btn:hover,.btn:active,.card:hover,.hcard:hover,.price:hover,.pkg:hover{transform:none !important}
+  html.js [data-reveal]{opacity:1;transform:none}
+}
+.hcard .xcard-inner p{border-top:0;padding-top:0;margin:0;font-size:15px;color:var(--ink-soft)}
+.hcard .xcard-inner > div > p:first-child{padding-top:12px;border-top:1px solid var(--line);margin-bottom:4px}
+.hcard summary{list-style:none;cursor:pointer}
+.pkg-more > summary{list-style:none;cursor:pointer;font-weight:600;color:var(--ink);padding:10px 0;display:flex;justify-content:space-between;align-items:center}
+.pkg-more > summary::-webkit-details-marker{display:none}
+.legal a.orgnr{text-decoration:underline;text-underline-offset:3px}
+details.lukker > .xcard-body{grid-template-rows:0fr !important}
+details.lukker > summary .chev{transform:none}
+/* N5: ::details-content-varianten er ikke brukt – grid-trikset virker i alle nettlesere og trenger ingen feature-test */
+
+/* ---------- N5: lys side – seksjoner, hero-kortet mørkt som et «instrument» ---------- */
+body{background:var(--bg)}
+section.alt{background:var(--bg-alt)}
+.report{--bg:#0b0c0e;--ink:rgba(246,243,240,.92);--ink-soft:rgba(246,243,240,.72);--ink-mute:rgba(246,243,240,.66);
+  --line:rgba(246,243,240,.12);--glass:rgba(246,243,240,.04);--blue-ink:#8aa4ff;color:var(--ink);box-shadow:0 30px 60px -30px rgba(15,22,35,.55)}
+.report .btn.ghost{box-shadow:0 0 0 1px var(--line) inset}
+.card,.hcard,.price,.pkg{background:#fff;border-color:var(--line)}
+.btn.ghost{color:var(--ink);box-shadow:0 0 0 1px #c9ced6 inset}
+.hero-hand{opacity:.16}
+/* tallstripe */
+.stripe{padding:28px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stripe-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.stat b{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(28px,3.2vw,38px);line-height:1.1;color:var(--ink)}
+.stat span{color:var(--ink-mute);font-size:15px}
+/* «Kjenner du deg igjen?» */
+.pain{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.pain .card{padding:22px}
+.pain-n{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font-weight:600;font-size:14px}
+.pain p{margin:14px 0 0;color:var(--ink);font-size:16px}
+/* punktlister med blå prikk */
+ul.dots{list-style:none;margin:10px 0 0;padding:0}
+ul.dots li{position:relative;padding-left:18px;margin:6px 0;color:var(--ink-soft);font-size:15px}
+ul.dots li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+/* tidslinje «Slik kommer du i gang» */
+.tidslinje{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:t}
+.tidslinje li{border-top:2px solid var(--blue);padding-top:16px}
+.tid{display:block;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+.tidslinje h3{margin:8px 0 6px}
+.tidslinje p{color:var(--ink-soft);margin:0;font-size:15px}
+.fotnote{color:var(--ink-mute);font-size:14px;margin:18px 0 0}
+.faq details > .xcard-body{display:grid}
+@media (max-width:980px){.pain{grid-template-columns:repeat(2,1fr)}.tidslinje{grid-template-columns:1fr 1fr}.stripe-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){.pain,.tidslinje{grid-template-columns:1fr}}

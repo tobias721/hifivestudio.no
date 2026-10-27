@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="no">
+<html lang="nb">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,10 +12,14 @@
 <meta property="og:url" content="https://hifivestudio.no/tjenester">
 <meta property="og:site_name" content="HiFive Studio">
 <meta property="og:locale" content="nb_NO">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://hifivestudio.no/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://hifivestudio.no/img/og.png">
 <meta name="theme-color" content="#0b0c0e">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/dm-sans.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/fraunces-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -23,7 +27,7 @@
   <a class="logo" href="/"><img src="/img/logo-hand.svg" alt="" width="22" height="26">HiFive Studio</a>
   <button class="menu-btn" aria-expanded="false" aria-controls="links" onclick="var n=document.getElementById('nav');n.classList.toggle('open');this.setAttribute('aria-expanded',n.classList.contains('open'))">Meny</button>
   <ul class="nav-links" id="links">
-    <li><a href="/tjenester">Tjenester</a></li>
+    <li><a href="/tjenester" aria-current="page">Tjenester</a></li>
     <li><a href="/priser-og-pakker">Priser og pakker</a></li>
     <li><a href="/#faq">Spørsmål</a></li>
     <li><a href="tel:+4791904010">91 90 40 10</a></li>
@@ -34,19 +38,20 @@
 
 <section class="page-head"><div class="wrap">
   <h1>Dette gjør vi</h1>
-  <p class="lead">Vi sørger for at folk som skal pusse opp havner hos deg og bare deg, og at de får svar før konkurrenten rekker å ringe tilbake. Her er delene vi setter sammen.</p>
+  <p class="lead">Målet er at folk som skal pusse opp havner hos deg og bare deg, og at de får svar før konkurrenten rekker å ringe tilbake. Her er delene vi setter sammen.</p>
 </div></section>
 <section style="padding-top:0"><div class="wrap">
-  <div class="grid g2"><div class="card"><h3>Google Bedriftsprofil</h3><p>Vi setter opp og verifiserer profilen din på Google Maps og Søk, med riktige kategorier, åpningstider og tjenester. Så holder vi den aktiv med jevnlige innlegg, slik at du dukker opp når folk i området søker etter det du driver med. Det samme oppsettet gjør deg lesbar for ChatGPT og Googles AI-modus, og vi måler hvor mange som finner deg den veien.</p></div><div class="card"><h3>Google Ads og Meta-annonser</h3><p>Vi bygger og styrer annonsene som vises når folk i området ditt søker etter tjenestene dine. Vi skriver annonsetekstene, velger søkeordene og justerer løpende. Annonsebudsjettet betaler du direkte til Google og Meta. Vi tar ingen prosent av det.</p></div><div class="card"><h3>Landingsside som gir henvendelser</h3><p>En side laget for én ting: at den som klikker faktisk tar kontakt. Kort, tydelig og bygget for mobil, med et skjema som kvalifiserer kunden før du bruker tid på dem.</p></div><div class="card"><h3>Varsel under 30 sekunder</h3><p>Når noen fyller ut skjemaet, får du SMS og e-post med en gang: navn, telefon, adresse og hva det gjelder. Du ringer tilbake mens de fortsatt sitter med telefonen i hånda, før konkurrenten rekker det.</p></div><div class="card"><h3>Sosiale medier</h3><p>Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse fra jobbene dine. Vi tar resten.</p></div><div class="card"><h3>Økonomisk rapport</h3><p>Du får tallene i kroner, ikke klikk og visninger: hva som er brukt, hvor mange henvendelser det ga, og hva hver henvendelse kostet.</p></div></div>
+  <div class="grid g2"><details class="card xcard" id="google-profil" data-reveal><summary><span class="xcard-head"><h3>Google Bedriftsprofil</h3><p class="xcard-ingress">Vi setter opp og verifiserer profilen din på Google Maps og Søk, med riktige kategorier, åpningstider og tjenester. Så holder vi den aktiv med jevnlige innlegg, slik at du dukker opp når folk i området søker etter det du driver med. Det samme oppsettet gjør deg lesbar for ChatGPT og Googles AI-modus, og vi måler hvor mange som finner deg den veien.</p></span><svg class="chev" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8l5 5 5-5"/></svg></summary><div class="xcard-body"><div class="xcard-inner"><div><h4>Hva du får</h4><ul><li>Profilen satt opp og verifisert, med riktig kategori, område og åpningstider</li><li>Samme navn, adresse og telefon på Gule Sider, 1881, Proff og Mittanbud</li><li>QR-kode og en fast rutine for å be om anmeldelser</li></ul><h4>Slik foregår det</h4><p>Vi går gjennom profilen slik den står i dag, retter det som er feil og fyller ut det som mangler. Du godkjenner før noe endres. Så holder vi den ved like.</p><h4>Hva det koster</h4><p>Inngår i Synlig: 1.490 kr/mnd og 4.900 kr i oppsett. Ingen binding.</p><a class="link" href="/priser-og-pakker#synlig">Se pakken →</a></div></div></div></details><details class="card xcard" id="google-ads" data-reveal><summary><span class="xcard-head"><h3>Google Ads og Meta-annonser</h3><p class="xcard-ingress">Vi bygger og styrer annonsene som vises når folk i området ditt søker etter tjenestene dine. Vi skriver annonsetekstene, velger søkeordene og justerer løpende. Annonsebudsjettet betaler du direkte til Google og Meta. Vi tar ingen prosent av det.</p></span><svg class="chev" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8l5 5 5-5"/></svg></summary><div class="xcard-body"><div class="xcard-inner"><div><h4>Hva du får</h4><ul><li>Søkekampanje bygget og driftet av oss</li><li>Søkeord og annonsetekster for tjenestene og området ditt</li><li>Rapport i kroner hver måned</li></ul><h4>Slik foregår det</h4><p>Vi starter med det folk faktisk søker etter der du jobber, bygger kampanjen og justerer den løpende. De første 30 dagene lærer Google hvem som er riktig kunde for deg.</p><h4>Hva det koster</h4><p>Inngår i Kundebooking: 5.900 kr/mnd og 9.900 kr i oppsett. Annonsebudsjettet betaler du rett til Google. Vi tar ingen prosent.</p><a class="link" href="/priser-og-pakker#kundebooking">Se pakken →</a></div></div></div></details><details class="card xcard" id="landingsside" data-reveal><summary><span class="xcard-head"><h3>Landingsside som gir henvendelser</h3><p class="xcard-ingress">En side laget for én ting: at den som klikker faktisk tar kontakt. Kort, tydelig og bygget for mobil, med et skjema som kvalifiserer kunden før du bruker tid på dem.</p></span><svg class="chev" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8l5 5 5-5"/></svg></summary><div class="xcard-body"><div class="xcard-inner"><div><h4>Hva du får</h4><ul><li>En side laget for mobil</li><li>Skjema som spør om det du trenger å vite</li><li>Telefonnummeret synlig øverst</li></ul><h4>Slik foregår det</h4><p>Vi skriver teksten ut fra det kundene dine søker etter, og bygger siden. Du leser gjennom før den går live.</p><h4>Hva det koster</h4><p>Inngår i Kundebooking: 5.900 kr/mnd og 9.900 kr i oppsett.</p><a class="link" href="/priser-og-pakker#kundebooking">Se pakken →</a></div></div></div></details><details class="card xcard" id="varsel" data-reveal><summary><span class="xcard-head"><h3>Varsel under 30 sekunder</h3><p class="xcard-ingress">Når noen fyller ut skjemaet, får du SMS og e-post med en gang: navn, telefon, adresse og hva det gjelder. Du ringer tilbake mens de fortsatt sitter med telefonen i hånda, før konkurrenten rekker det.</p></span><svg class="chev" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8l5 5 5-5"/></svg></summary><div class="xcard-body"><div class="xcard-inner"><div><h4>Hva du får</h4><ul><li>SMS og e-post når skjemaet sendes</li><li>Navn, telefon og hva det gjelder</li><li>Ingen app å installere</li></ul><h4>Slik foregår det</h4><p>Vi kobler skjemaet til mobilen din. Du ringer tilbake mens kunden fortsatt sitter med telefonen i hånda.</p><h4>Hva det koster</h4><p>Inngår i Kundebooking: 5.900 kr/mnd og 9.900 kr i oppsett.</p><a class="link" href="/priser-og-pakker#kundebooking">Se pakken →</a></div></div></div></details><details class="card xcard" id="sosiale-medier" data-reveal><summary><span class="xcard-head"><h3>Sosiale medier</h3><p class="xcard-ingress">Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse fra jobbene dine. Vi tar resten.</p></span><svg class="chev" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8l5 5 5-5"/></svg></summary><div class="xcard-body"><div class="xcard-inner"><div><h4>Hva du får</h4><ul><li>8 innlegg i måneden på Facebook og 8 på Instagram</li><li>Vi skriver all tekst</li><li>Vi publiserer når det gir mest</li></ul><h4>Slik foregår det</h4><p>Du sender bilder fra jobbene og noen setninger om hva som er gjort. Mobilbilder holder. Vi gjør resten.</p><h4>Hva det koster</h4><p>Tillegg til alle pakker: 3.990 kr/mnd og 4.900 kr i oppsett. Ingen binding.</p><a class="link" href="/priser-og-pakker#sosiale-medier">Se pakken →</a></div></div></div></details><details class="card xcard" id="rapport" data-reveal><summary><span class="xcard-head"><h3>Økonomisk rapport</h3><p class="xcard-ingress">Du får tallene i kroner, ikke klikk og visninger: hva som er brukt, hvor mange henvendelser det ga, og hva hver henvendelse kostet.</p></span><svg class="chev" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8l5 5 5-5"/></svg></summary><div class="xcard-body"><div class="xcard-inner"><div><h4>Hva du får</h4><ul><li>Hva som er brukt</li><li>Hvor mange som tok kontakt</li><li>Hva hver henvendelse kostet</li></ul><h4>Slik foregår det</h4><p>Du får rapporten hver måned i Kundebooking og hver uke i Eksklusiv. Tall du kan ta en beslutning på, ikke klikk og visninger.</p><h4>Hva det koster</h4><p>Inngår i Kundebooking (5.900 kr/mnd) og oppover.</p><a class="link" href="/priser-og-pakker#kundebooking">Se pakken →</a></div></div></div></details></div>
   <p style="margin-top:32px">Se hva dette koster under <a class="link" href="/priser-og-pakker">Priser og pakker</a>.</p>
 </div></section>
 <section><div class="wrap"><div class="cta">
   <h2>Klar for flere kunder?</h2>
   <p>Fortell oss om bedriften din, så gjør vi en gratis gjennomgang: dukker du opp når folk søker etter tjenesten din i området ditt, ikke bare på firmanavnet? Hvordan står Google-profilen din mot konkurrentene? Du får en ærlig prioritering av hva som bør fikses først, uten forpliktelser.</p>
-  <div class="cta-actions"><a class="btn" href="tel:+4791904010">Ring 91 90 40 10</a><a class="btn ghost" href="mailto:tobias@hifivestudio.no?subject=Gratis%20gjennomgang&amp;body=Hei%20Tobias%21%0A%0AJeg%20er%20interessert%20i%20%C3%A5%20h%C3%B8re%20mer%20om%20en%20gratis%20gjennomgang.%0A%0AFirma%3A%0ABy/omr%C3%A5de%3A%0ATelefon%3A%0A%0AMvh">Send e-post</a><a class="btn ghost" href="/priser-og-pakker">Se pakkene</a></div>
+  <div class="cta-actions"><a class="btn" href="tel:+4791904010">Ring 91 90 40 10 <span class="btn-arrow" aria-hidden="true">→</span></a><a class="btn ghost" href="mailto:tobias@hifivestudio.no?subject=Gratis%20gjennomgang&amp;body=Hei%20Tobias%21%0A%0AJeg%20er%20interessert%20i%20%C3%A5%20h%C3%B8re%20mer%20om%20en%20gratis%20gjennomgang.%0A%0AFirma%3A%0ABy/omr%C3%A5de%3A%0ATelefon%3A%0A%0AMvh">Send e-post</a><a class="btn ghost" href="/priser-og-pakker">Se pakkene</a></div>
 </div></div></section>
 
 </main>
+<div class="sticky-cta" id="sticky"><a class="btn" href="tel:+4791904010">Ring 91 90 40 10</a><a class="btn ghost" href="mailto:tobias@hifivestudio.no?subject=Gratis%20gjennomgang&amp;body=Hei%20Tobias%21%0A%0AJeg%20er%20interessert%20i%20%C3%A5%20h%C3%B8re%20mer%20om%20en%20gratis%20gjennomgang.%0A%0AFirma%3A%0ABy/omr%C3%A5de%3A%0ATelefon%3A%0A%0AMvh">Send e-post</a></div>
 <footer>
   <div class="wrap">
     <div class="foot">
@@ -68,10 +73,11 @@
       </div>
     </div>
     <div class="legal">
-      <span>HiFive Studio · Lilleakerveien 31B, 0283 Oslo · Org.nr. 938 365 180 · <a href="mailto:tobias@hifivestudio.no?subject=Gratis%20gjennomgang&amp;body=Hei%20Tobias%21%0A%0AJeg%20er%20interessert%20i%20%C3%A5%20h%C3%B8re%20mer%20om%20en%20gratis%20gjennomgang.%0A%0AFirma%3A%0ABy/omr%C3%A5de%3A%0ATelefon%3A%0A%0AMvh">tobias@hifivestudio.no</a> · <a href="tel:+4791904010">91 90 40 10</a></span>
+      <span>HiFive Studio · Lilleakerveien 31B, 0283 Oslo · <a class="orgnr" href="https://virksomhet.brreg.no/nb/oppslag/enheter/938365180">Org.nr. 938 365 180</a> · <a href="mailto:tobias@hifivestudio.no?subject=Gratis%20gjennomgang&amp;body=Hei%20Tobias%21%0A%0AJeg%20er%20interessert%20i%20%C3%A5%20h%C3%B8re%20mer%20om%20en%20gratis%20gjennomgang.%0A%0AFirma%3A%0ABy/omr%C3%A5de%3A%0ATelefon%3A%0A%0AMvh">tobias@hifivestudio.no</a> · <a href="tel:+4791904010">91 90 40 10</a></span>
       <span>© 2026 HiFive Studio</span>
     </div>
   </div>
 </footer>
+<script src="/js/ui.js" defer></script>
 </body>
 </html>

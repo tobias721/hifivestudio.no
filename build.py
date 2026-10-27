@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Bygger de statiske sidene for hifivestudio.no. Kjør: python3 build.py"""
+import re
 from pathlib import Path
 from urllib.parse import quote
 
@@ -15,7 +16,8 @@ def mailto(emne="Gratis gjennomgang", tekst=MAILTEKST):
 
 
 MAIL = mailto()
-FONT = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&display=swap" rel="stylesheet">'
+# N5: fontene ligger i /fonts/ (ingen forespørsel til Google Fonts fra besøkende). @font-face står øverst i style.css.
+FONT = '<link rel="preload" href="/fonts/dm-sans.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/fraunces-400.woff2" as="font" type="font/woff2" crossorigin>'
 
 # Hånd-logoen som tynn linjetegning bak heroen (samme sti som img/logo-hand.svg)
 HAND = '<svg class="hero-hand" aria-hidden="true" viewBox="100 90 265 320" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M185,250 L185,130 L225,130 L225,105 L265,105 L265,130 L305,130 L305,185 L345,185 L345,330 L325,360 L325,392 L225,392 L225,380 C225,366 211.3,351.9 200,335.4 L121,223 C113,211 126,201 142,208 L185,250 Z"/><path d="M225,130 L225,220 L265,220 L265,130"/><path d="M305,130 L305,325"/><path d="M225,325 L225,255 L265,255 L265,325"/></svg>'
@@ -26,10 +28,17 @@ PHOTO = next((p for p in ("tobias.webp", "tobias.jpg") if (OUT / "img" / p).exis
 TRUST = '<ul class="trust"><li>Org.nr. 938 365 180</li><li>Ingen binding</li><li>Du eier alt: domene, nettside og Google-profil</li></ul>'
 
 
+JSONLD = """
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"HiFive Studio",
+"url":"https://hifivestudio.no/","telephone":"+4791904010","email":"tobias@hifivestudio.no",
+"address":{"@type":"PostalAddress","streetAddress":"Lilleakerveien 31B","postalCode":"0283","addressLocality":"Oslo","addressCountry":"NO"},
+"areaServed":"NO","founder":{"@type":"Person","name":"Tobias Svendsen"},"sameAs":[]}</script>"""
+
+
 def page(slug, title, desc, body):
     canon = "https://hifivestudio.no/" + ("" if slug == "index" else slug)
     return f"""<!doctype html>
-<html lang="no">
+<html lang="nb">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -42,7 +51,11 @@ def page(slug, title, desc, body):
 <meta property="og:url" content="{canon}">
 <meta property="og:site_name" content="HiFive Studio">
 <meta property="og:locale" content="nb_NO">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://hifivestudio.no/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://hifivestudio.no/img/og.png">{JSONLD if slug == "index" else ""}
 <meta name="theme-color" content="#0b0c0e">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
 {FONT}
@@ -53,8 +66,8 @@ def page(slug, title, desc, body):
   <a class="logo" href="/"><img src="/img/logo-hand.svg" alt="" width="22" height="26">HiFive Studio</a>
   <button class="menu-btn" aria-expanded="false" aria-controls="links" onclick="var n=document.getElementById('nav');n.classList.toggle('open');this.setAttribute('aria-expanded',n.classList.contains('open'))">Meny</button>
   <ul class="nav-links" id="links">
-    <li><a href="/tjenester">Tjenester</a></li>
-    <li><a href="/priser-og-pakker">Priser og pakker</a></li>
+    <li><a href="/tjenester"{' aria-current="page"' if slug == "tjenester" else ""}>Tjenester</a></li>
+    <li><a href="/priser-og-pakker"{' aria-current="page"' if slug == "priser-og-pakker" else ""}>Priser og pakker</a></li>
     <li><a href="/#faq">Spørsmål</a></li>
     <li><a href="{TEL}">91 90 40 10</a></li>
     <li><a class="btn small" href="/kontakt">Kontakt</a></li>
@@ -63,6 +76,7 @@ def page(slug, title, desc, body):
 <main>
 {body}
 </main>
+<div class="sticky-cta" id="sticky"><a class="btn" href="{TEL}">Ring 91 90 40 10</a><a class="btn ghost" href="{MAIL}">Send e-post</a></div>
 <footer>
   <div class="wrap">
     <div class="foot">
@@ -84,11 +98,12 @@ def page(slug, title, desc, body):
       </div>
     </div>
     <div class="legal">
-      <span>HiFive Studio · Lilleakerveien 31B, 0283 Oslo · Org.nr. 938 365 180 · <a href="{MAIL}">{EPOST}</a> · <a href="{TEL}">91 90 40 10</a></span>
+      <span>HiFive Studio · Lilleakerveien 31B, 0283 Oslo · <a class="orgnr" href="https://virksomhet.brreg.no/nb/oppslag/enheter/938365180">Org.nr. 938 365 180</a> · <a href="{MAIL}">{EPOST}</a> · <a href="{TEL}">91 90 40 10</a></span>
       <span>© 2026 HiFive Studio</span>
     </div>
   </div>
 </footer>
+<script src="/js/ui.js" defer></script>
 </body>
 </html>
 """
@@ -98,7 +113,7 @@ def cta(title="Klar for flere kunder?"):
     return f"""<section><div class="wrap"><div class="cta">
   <h2>{title}</h2>
   <p>Fortell oss om bedriften din, så gjør vi en gratis gjennomgang: dukker du opp når folk søker etter tjenesten din i området ditt, ikke bare på firmanavnet? Hvordan står Google-profilen din mot konkurrentene? Du får en ærlig prioritering av hva som bør fikses først, uten forpliktelser.</p>
-  <div class="cta-actions"><a class="btn" href="{TEL}">Ring 91 90 40 10</a><a class="btn ghost" href="{MAIL}">Send e-post</a><a class="btn ghost" href="/priser-og-pakker">Se pakkene</a></div>
+  <div class="cta-actions"><a class="btn" href="{TEL}">Ring 91 90 40 10 <span class="btn-arrow" aria-hidden="true">→</span></a><a class="btn ghost" href="{MAIL}">Send e-post</a><a class="btn ghost" href="/priser-og-pakker">Se pakkene</a></div>
 </div></div></section>"""
 
 
@@ -117,6 +132,122 @@ STEPS = [
     ("En meny, ikke en pakke", "Vi foreslår det som passer, og sier høyt hva du ikke trenger. Halvparten trenger bare det billigste."),
     ("Rapport i kroner", "Brukt, henvendelser, pris per henvendelse. Ingen klikk og visninger – tall du kan ta en beslutning på."),
 ]
+
+# N5 27.10: «les mer» i kortene. Ny ordlyd, men ingen nye tall eller løfter – prisene er hentet ordrett fra PK.
+# (tittel) → (slug, hva du får [3], slik foregår det, hva det koster, pakke-id på prissiden)
+MER = {
+    "Google Bedriftsprofil": ("google-profil",
+        ["Profilen satt opp og verifisert, med riktig kategori, område og åpningstider", "Samme navn, adresse og telefon på Gule Sider, 1881, Proff og Mittanbud", "QR-kode og en fast rutine for å be om anmeldelser"],
+        "Vi går gjennom profilen slik den står i dag, retter det som er feil og fyller ut det som mangler. Du godkjenner før noe endres. Så holder vi den ved like.",
+        "Inngår i Synlig: 1.490 kr/mnd og 4.900 kr i oppsett. Ingen binding.", "synlig"),
+    "Google Ads og Meta-annonser": ("google-ads",
+        ["Søkekampanje bygget og driftet av oss", "Søkeord og annonsetekster for tjenestene og området ditt", "Rapport i kroner hver måned"],
+        "Vi starter med det folk faktisk søker etter der du jobber, bygger kampanjen og justerer den løpende. De første 30 dagene lærer Google hvem som er riktig kunde for deg.",
+        "Inngår i Kundebooking: 5.900 kr/mnd og 9.900 kr i oppsett. Annonsebudsjettet betaler du rett til Google. Vi tar ingen prosent.", "kundebooking"),
+    "Landingsside som gir henvendelser": ("landingsside",
+        ["En side laget for mobil", "Skjema som spør om det du trenger å vite", "Telefonnummeret synlig øverst"],
+        "Vi skriver teksten ut fra det kundene dine søker etter, og bygger siden. Du leser gjennom før den går live.",
+        "Inngår i Kundebooking: 5.900 kr/mnd og 9.900 kr i oppsett.", "kundebooking"),
+    "Varsel under 30 sekunder": ("varsel",
+        ["SMS og e-post når skjemaet sendes", "Navn, telefon og hva det gjelder", "Ingen app å installere"],
+        "Vi kobler skjemaet til mobilen din. Du ringer tilbake mens kunden fortsatt sitter med telefonen i hånda.",
+        "Inngår i Kundebooking: 5.900 kr/mnd og 9.900 kr i oppsett.", "kundebooking"),
+    "Sosiale medier": ("sosiale-medier",
+        ["8 innlegg i måneden på Facebook og 8 på Instagram", "Vi skriver all tekst", "Vi publiserer når det gir mest"],
+        "Du sender bilder fra jobbene og noen setninger om hva som er gjort. Mobilbilder holder. Vi gjør resten.",
+        "Tillegg til alle pakker: 3.990 kr/mnd og 4.900 kr i oppsett. Ingen binding.", "sosiale-medier"),
+    "Økonomisk rapport": ("rapport",
+        ["Hva som er brukt", "Hvor mange som tok kontakt", "Hva hver henvendelse kostet"],
+        "Du får rapporten hver måned i Kundebooking og hver uke i Eksklusiv. Tall du kan ta en beslutning på, ikke klikk og visninger.",
+        "Inngår i Kundebooking (5.900 kr/mnd) og oppover.", "kundebooking"),
+}
+# H1–H5: (hvorfor dette teller, hva vi gjør med det, dette kan du gjøre selv i dag)
+MER_H = {
+    "H1": ("Søker få folk etter det du gjør, er annonser bortkastet. Søker mange, taper du kunder hver måned du ikke vises.",
+           "Vi henter tallene for byen din fra Googles søkeordplanlegger, for «rørlegger» og for «baderom».",
+           "Søk «rørlegger» og byen din i et privat nettleservindu, og se hvem som kommer opp."),
+    "H2": ("Du må vite hva en kunde koster før du bruker en krone på annonser.",
+           "Vi regner klikkprisen i ditt område om til kroner per henvendelse. Det er et anslag, og det står det.",
+           "Tenk gjennom hva én badjobb er verdt for deg. Det er tallet vi regner mot."),
+    "H3": ("Omtalene er det første både Google og kundene ser.",
+           "Vi sammenligner deg med de tre øverste, punkt for punkt: omtaler, egen side, telefon og bilder av egne jobber.",
+           "Send én SMS med lenke til Google-omtale til de fem siste kundene dine."),
+    "H4": ("Flere spør ChatGPT og Googles AI om råd. De anbefaler firmaer de har noe å lese om.",
+           "Vi sjekker om du har det de leser fra: komplett profil, omtaler og like opplysninger overalt. Vi lover ingen plassering.",
+           "Sjekk at telefonnummeret er det samme på Google, nettsiden og 1881."),
+    "H5": ("Du har ikke tid til alt. Rekkefølgen avgjør hva du får igjen.",
+           "Vi sorterer tre tiltak etter effekt, og sier hvilke du kan gjøre selv.",
+           "Det første tiltaket er nesten alltid gratis. Det får du uansett."),
+}
+CHEV = '<svg class="chev" aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 8l5 5 5-5"/></svg>'
+
+
+def xcard(tittel, ingress, reveal=True):
+    """Tjenestekort som kan åpnes (<details>). Virker uten JS; js/ui.js legger på animasjon ved lukking."""
+    slug, faa, slik, koster, pakke = MER[tittel]
+    kropp = (f'<h4>Hva du får</h4><ul>{"".join(f"<li>{x}</li>" for x in faa)}</ul>'
+             f'<h4>Slik foregår det</h4><p>{slik}</p><h4>Hva det koster</h4><p>{koster}</p>'
+             f'<a class="link" href="/priser-og-pakker#{pakke}">Se pakken →</a>')
+    return (f'<details class="card xcard" id="{slug}"{" data-reveal" if reveal else ""}><summary><span class="xcard-head"><h3>{tittel}</h3>'
+            f'<p class="xcard-ingress">{ingress}</p></span>{CHEV}</summary>'
+            f'<div class="xcard-body"><div class="xcard-inner"><div>{kropp}</div></div></div></details>')
+
+
+def hel(v):   # «1 000–5 000 kr» skal ikke brekke inne i et tall eller før «kr» (harde mellomrom)
+    return re.sub(r"(\d) (?=\d{3}\b|kr\b)", "\\1\u00a0", v)
+
+
+def hcard(n, t, v, u, d):
+    hvorfor, vi, selv = MER_H[n]
+    return (f'<li class="hcard xcard" data-reveal><details id="{n.lower()}"><summary><div class="hcard-top"><span class="hnum">{n}</span>'
+            f'<span style="display:flex;gap:10px;align-items:center"><span class="ex">Eksempel</span>{CHEV}</span></div>'
+            f'<h3>{t}</h3><div class="hval">{hel(v)}</div><div class="hunit">{u}</div></summary>'
+            f'<div class="xcard-body"><div class="xcard-inner"><div><p>{d}</p><h4>Hvorfor dette teller</h4><p>{hvorfor}</p>'
+            f'<h4>Hva vi gjør med det</h4><p>{vi}</p><h4>Dette kan du gjøre selv i dag</h4><p>{selv}</p></div></div></div></details></li>')
+
+
+# ---------- N5 27.10: forsiden i lys «Visionmedia»-retning ----------
+ANTALL_BYER = len(__import__("json").loads((OUT / "data" / "bysok.json").read_text(encoding="utf-8"))["byer"])
+STATS = [("14 år", "som rørlegger"), (f"{ANTALL_BYER} byer", "med Googles søketall"),
+         ("1 virkedag", "maks svartid på henvendelser"), ("1 bedrift", "per område")]
+PAIN = ["Konkurrenten ligger øverst på «rørlegger + byen din», ikke du.",
+        "Jobbene kommer ujevnt, og det meste via folk du kjenner.",
+        "Nettsiden er fra 2016, eller den finnes ikke.",
+        "Du vet ikke hva markedsføring koster, eller om det lønner seg.",
+        "Du prøvde Google Ads selv. Det ble dyrt og stille."]
+# (tittel, 4 punkter, slik foregår det, pris – ordrett fra PK, pakke-id, slug)
+TJENESTER4 = [
+    ("Google-profil og omtaler", ["Profilen satt opp og verifisert", "Riktig kategori, område og åpningstider", "Samme navn og telefon på 1881, Gule Sider og Proff", "Fast rutine for å be om omtaler"],
+     "Vi går gjennom profilen slik den står i dag, retter det som er feil og fyller ut det som mangler. Du godkjenner før noe endres.",
+     "Inngår i Synlig: 1.490 kr/mnd og 4.900 kr i oppsett. Ingen binding.", "synlig", "google-profil"),
+    ("Google-annonser", ["Søkekampanje bygget og driftet av oss", "Søkeord for tjenestene og området ditt", "Annonsekontoen står i ditt navn", "Vi tar ingen prosent av budsjettet"],
+     "Vi starter med det folk faktisk søker etter der du jobber, og justerer løpende. De første 30 dagene lærer Google hvem som er riktig kunde.",
+     "Inngår i Kundebooking: 5.900 kr/mnd og 9.900 kr i oppsett. Annonsebudsjettet betaler du rett til Google.", "kundebooking", "google-ads"),
+    ("Landingsside og varsel", ["En side laget for mobil", "Skjema som spør om det du trenger å vite", "SMS og e-post med en gang", "Du ringer tilbake mens kunden venter"],
+     "Vi skriver teksten ut fra det kundene dine søker etter, og kobler skjemaet til mobilen din. Du leser gjennom før det går live.",
+     "Inngår i Kundebooking: 5.900 kr/mnd og 9.900 kr i oppsett.", "kundebooking", "landingsside"),
+    ("Rapport i kroner", ["Hva som er brukt", "Hvor mange som tok kontakt", "Hva hver henvendelse kostet", "Ingen klikk og visninger"],
+     "Du får rapporten hver måned i Kundebooking og hver uke i Eksklusiv. Tall du kan ta en beslutning på.",
+     "Inngår i Kundebooking (5.900 kr/mnd) og oppover.", "kundebooking", "rapport"),
+]
+JOBBTYPER = [
+    ("Bad og våtrom", "Store jobber, lang beslutning", ["Folk leter i ukevis før de ringer", "Bilder av egne bad avgjør mye", "Omtaler som nevner bad veier tungt", "Annonsene må stå hele perioden, ikke én uke"]),
+    ("Varme og varmepumpe", "Sesong og sammenligning", ["Søkene øker når det blir kaldt", "Folk sammenligner pris og merke", "Egen side for varmepumpe treffer bedre enn forsiden", "Service før vinteren er en egen jobb å synes på"]),
+    ("Service og akutt", "Raske beslutninger", ["Folk ringer den første som svarer", "Telefonnummeret må stå øverst på mobil", "Åpningstider og akutt på Google-profilen", "Annonser på kveld og helg kan være verdt det"]),
+]
+GANG = [("Dag 1", "Gratis gjennomgang", "Vi ser hvordan du ligger an på Google i dag, med tall fra ditt område. Du får tre ting du kan fikse selv, uansett."),
+        ("Uke 1", "Oppsett", "Google-profil, sporing og landingsside. Du bruker under en time på oppstarten."),
+        ("Uke 2", "Annonser live", "Kampanjen går. Henvendelsene kommer rett på mobilen."),
+        ("Hver måned", "Rapport i kroner", "Brukt, henvendelser og pris per henvendelse. Vi justerer ut fra det.")]
+
+
+def tjenestekort(tittel, punkter, slik, pris, pakke, slug):
+    """Tjenestekort med 4 synlige punkter som kan åpnes for «Slik foregår det / Pris / Se pakken»."""
+    return (f'<details class="card xcard" id="{slug}" data-reveal><summary><span class="xcard-head"><h3>{tittel}</h3>'
+            f'<ul class="dots">{"".join(f"<li>{x}</li>" for x in punkter)}</ul></span>{CHEV}</summary>'
+            f'<div class="xcard-body"><div class="xcard-inner"><div><h4>Slik foregår det</h4><p>{slik}</p>'
+            f'<h4>Pris</h4><p>{pris}</p><a class="link" href="/priser-og-pakker#{pakke}">Se pakken →</a></div></div></div></details>')
+
 
 # Helsesjekken – eksempeltall, typiske for et rørleggerfirma i en mellomstor by
 HEALTH = [
@@ -169,7 +300,9 @@ def tobias():
 
 
 FAQ = [
-    ("Hva er HiFive Studio?", "Vi sørger for at folk som skal pusse opp havner hos deg, og bare deg. Vi kjører annonsene, lager siden de lander på, og sender henvendelsen rett på mobilen din sekunder etter at den kommer inn. Tobias som driver HiFive er rørlegger med 14 år i faget, så vi kjenner bransjen fra innsiden."),
+    ("Kan dere garantere flere jobber?", "Nei. Ingen kan det, og de som sier det lyver. Det vi garanterer er oppsettet, målingen – og på Kundebooking og Eksklusiv et minimum av kvalifiserte henvendelser i perioden dag 31–90. Får du færre enn 6, refunderer vi oppsettet."),
+    ("Hva skjer om jeg vil slutte?", "Du sier opp når du vil. Det er ingen bindingstid og ingen oppsigelsestid. Annonsekontoen står i ditt navn med ditt kort, og domene, nettside og Google-profil eier du. Alt blir med deg."),
+    ("Hva er HiFive Studio?", "Målet er at folk som skal pusse opp havner hos deg, og bare deg. Vi kjører annonsene, lager siden de lander på, og sender henvendelsen rett på mobilen din sekunder etter at den kommer inn. Tobias som driver HiFive er rørlegger med 14 år i faget, så vi kjenner bransjen fra innsiden."),
     ("Hvorfor anbefaler dere minst 3 måneder med annonsering?", "Fordi Google og Meta må lære hvem som er riktig kunde for deg. Måned 1 samler systemet data og finner ut hvilke søk og hvilke folk som faktisk fører til jobber. Da er henvendelsene færre og dyrere. Måned 2 begynner vi å kutte det som ikke virker og legge pengene der de gir resultat. Måned 3 er kampanjen innkjørt, og det er da du ser hva den faktisk kan levere. Stopper du etter fire uker, betaler du for læringen uten å få gevinsten. Derfor anbefaler vi 90 dager. Men vi har ingen bindingstid, og du kan si opp når du vil."),
     ("Hvor mange henvendelser kan jeg forvente?", "Regnestykket er enkelt: et klikk på relevante søkeord koster typisk 20–40 kr i Norge, og omtrent 2–3 av 100 som klikker tar faktisk kontakt. Med 12.000 kr i annonsebudsjett får du rundt 350–450 klikk, som gir 8–12 kvalifiserte henvendelser i måneden. Første måned ligger normalt lavere mens kampanjen lærer hvem som er riktig kunde for deg. Det er et regnestykke, ikke et løfte. Det eneste vi garanterer står her: gir kampanjen færre enn 6 kvalifiserte henvendelser i perioden dag 31 til dag 90, refunderer vi oppsettet på Kundebooking og Eksklusiv. De første 30 dagene er datainnsamling og teller ikke med. Forutsetter annonsebudsjett fra 12.000 kr/mnd (Kundebooking) eller 18.000 kr/mnd (Eksklusiv) i hele perioden."),
     ("Hva er en kvalifisert henvendelse, og er det bindingstid?", "En kvalifisert henvendelse er en person med ekte navn og telefonnummer som svarer, innenfor ditt område, som eier boligen eller bestemmer, og som vil ha jobben gjort innen seks måneder. Feil nummer, selgere og folk utenfor området teller ikke. Du betaler fast pris, uten tillegg per henvendelse, uansett hvor mange du får. Og nei, det er ingen bindingstid og ingen oppsigelsestid: du kan si opp fra måned til måned. Vi jobber med én bedrift per område, så du konkurrerer aldri mot en annen av våre kunder om de samme henvendelsene."),
@@ -178,7 +311,6 @@ FAQ = [
 
 OBJ = [
     ("«Vi har prøvd Google Ads før – det funket ikke.»", "Da er spørsmålet: hva ble målt? De fleste får satt opp en kampanje uten sporing, og så vet ingen om det var annonsene som sviktet eller om ingen så etter. Vi sporer hvert anrop og hvert skjema fra annonsene, og du ser tallene hver uke – i kroner, ikke klikk."),
-    ("«Kan dere garantere resultater?»", "Nei. Ingen kan det, og de som sier det lyver. Det vi garanterer er oppsettet, målingen – og på Kundebooking og Eksklusiv et minimum av kvalifiserte henvendelser i perioden dag 31–90. Får du færre enn 6, refunderer vi oppsettet."),
     ("«Jeg trenger jobber allerede neste måned.»", "Da er Google Ads på bad feil produkt for deg, og det sier vi heller nå enn etterpå. Henvendelsene kommer fra måned én, men et bad er en beslutning folk bruker to til seks måneder på – signerte jobber ser du i måned tre til seks. Trenger du omsetning raskt, starter vi med Synlig (Google-profilen) eller ingenting."),
     ("«Vi er med i en kjede – trenger vi dette?»", "Kanskje ikke. Spør kjeden hva de gjør lokalt: kjører de annonser på «baderom» i byen din med ditt telefonnummer, eller stopper det ved en profilside? Gjør kjeden jobben, trenger du oss ikke – og det sier vi. Gjør de det ikke, konkurrerer du mot naboen om de samme kundene."),
     ("«Vi har ikke budsjett til dette.»", "Da er det enda viktigere å bruke det lille på riktig sted. Det billigste som virker er nesten gratis: Google-profilen din, riktig satt opp – det er Synlig til 1 490 kr i måneden, uten annonser. Annonser kan vente til det er penger til det. Halvparten av dem vi snakker med trenger bare det billigste, og det sier vi rett ut."),
@@ -187,7 +319,7 @@ OBJ = [
 
 
 def faq_items(items):
-    return "\n".join(f"<details><summary>{q}</summary><p>{a}</p></details>" for q, a in items)
+    return "\n".join(f'<details><summary>{q}</summary><div class="xcard-body"><div class="xcard-inner"><p>{a}</p></div></div></details>' for q, a in items)
 
 
 # ---------- Forside ----------
@@ -195,73 +327,76 @@ home = f"""
 <section class="hero">{HAND}<div class="wrap hero-grid">
   <div>
     <div class="eyebrow">Gratis gjennomgang</div>
-    <h1 style="margin-top:18px">Kundene dine googler. Vi sørger for at de finner deg.</h1>
-    <p class="lead">Vi setter opp Google-annonsene, landingssiden og sporingen for håndverkerbedrifter, og drifter alt videre. Du tar telefonen. Fast månedspris, ingen bindingstid, og annonsebudsjettet betaler du rett til Google.</p>
+    <h1 style="margin-top:18px">Flere rørleggerjobber fra Google.</h1>
+    <p class="lead">Vi setter opp Google-profil, annonser og landingsside for rørleggere, og sender henvendelsene rett på mobilen.</p>
     <div class="hero-actions">
-      <a class="btn" href="/kontakt">Be om gratis gjennomgang</a>
-      <a class="link" href="{TEL}">Eller ring 91 90 40 10</a>
+      <a class="btn" href="/kontakt">Be om gratis gjennomgang <span class="btn-arrow" aria-hidden="true">→</span></a>
+      <a class="btn ghost" href="#slik">Se hvordan vi jobber ↓</a>
     </div>
     <p class="hero-trust">Tobias Svendsen · rørlegger i 14 år · Org.nr 938 365 180</p>
   </div>
   {REPORT}
 </div></section>
-
 <script src="/js/bysok.js" defer></script>
 
-<section id="helsesjekk"><div class="wrap">
-  <div class="sec-head"><h2>Slik ser en helsesjekk ut</h2><p class="lead">Fem punkter, med tall fra ditt område. Slik ser resultatet ut. Tallene er typiske for et rørleggerfirma i en mellomstor by.</p></div>
+<section class="stripe" aria-label="Kort om oss"><div class="wrap stripe-grid">
+  {''.join(f'<div class="stat" data-reveal><b>{a}</b><span>{b}</span></div>' for a, b in STATS)}
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <div class="sec-head" data-reveal><h2>Kjenner du deg igjen?</h2></div>
+  <ol class="pain">{''.join(f'<li class="card" data-reveal><span class="pain-n">{i}</span><p>{t}</p></li>' for i, t in enumerate(PAIN, 1))}</ol>
+</div></section>
+
+<section id="tjenester"><div class="wrap">
+  <div class="sec-head" data-reveal><h2>Slik hjelper vi rørleggere</h2><p class="lead">Du trenger ikke alt. Vi setter sammen det som passer, og drifter det videre.</p></div>
+  <div class="grid g2">{''.join(tjenestekort(*k) for k in TJENESTER4)}</div>
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <div class="sec-head" data-reveal><h2>Tilpasset det dere gjør mest</h2><p class="lead">Folk søker forskjellig etter et nytt bad og etter en lekkasje. Kampanjen bygges etter det.</p></div>
+  <div class="grid g3">{''.join(f'<div class="card" data-reveal><span class="ex">{e}</span><h3 style="margin-top:14px">{t}</h3><ul class="dots">{"".join(f"<li>{x}</li>" for x in xs)}</ul></div>' for t, e, xs in JOBBTYPER)}</div>
+</div></section>
+
+{cta("Klar for flere jobber?")}
+
+<section id="slik"><div class="wrap">
+  <div class="sec-head" data-reveal><h2>Slik kommer du i gang</h2><p class="lead">Ingen pakke før diagnosen. Vi jobber som en rørlegger på befaring: se først, foreslå etterpå.</p></div>
+  <ol class="tidslinje">{''.join(f'<li data-reveal><span class="tid">{t}</span><h3>{h}</h3><p>{d}</p></li>' for t, h, d in GANG)}</ol>
+</div></section>
+
+<section id="helsesjekk" class="alt"><div class="wrap">
+  <div class="sec-head" data-reveal><h2>Slik ser en helsesjekk ut</h2><p class="lead">Fem punkter, med tall fra ditt område. Tallene under er typiske for et rørleggerfirma i en mellomstor by.</p></div>
   <ol class="health">
-    {''.join(f'<li class="hcard"><div class="hcard-top"><span class="hnum">{n}</span><span class="ex">Eksempel</span></div><h3>{t}</h3><div class="hval">{v}</div><div class="hunit">{u}</div><p>{d}</p></li>' for n, t, v, u, d in HEALTH)}
+    {''.join(hcard(*h) for h in HEALTH)}
   </ol>
 </div></section>
 
-{tobias()}
-
-<section id="tjenester"><div class="wrap">
-  <div class="sec-head"><h2>Dette gjør vi</h2><p class="lead">Du trenger ikke alt. Vi setter sammen det som passer bedriften din, og drifter det videre.</p></div>
-  <div class="grid g3">
-    {''.join(f'<div class="card"><h3>{t}</h3><p>{d}</p></div>' for t, d in SERVICES)}
-  </div>
-</div></section>
-
-<section><div class="wrap">
-  <div class="sec-head"><h2>Slik jobber vi</h2><p class="lead">Ingen pakke før diagnosen. Vi jobber som en rørlegger på befaring: se først, foreslå etterpå.</p></div>
-  <div class="steps">
-    <div>
-      {''.join(f'<div class="step"><div class="num">{i}</div><div><h3>{t}</h3><p>{d}</p></div></div>' for i, (t, d) in enumerate(STEPS, 1))}
-    </div>
-    <figure>
-      <img src="/img/rapport.webp" alt="Eksempel på ukesrapport fra HiFive Studio" width="1344" height="752" loading="lazy">
-      <figcaption>Eksempel: illustrasjon av ukesrapporten, ikke ekte tall. Din rapport viser hva du brukte, hvor mange som tok kontakt og hva hver henvendelse kostet.</figcaption>
-    </figure>
-  </div>
-</div></section>
-
-<section><div class="wrap">
-  <div class="sec-head"><h2>Priser og pakker</h2><p class="lead">Fast månedspris, ingen bindingstid. Annonsebudsjettet betaler du rett til Google og Meta. Vi tar ingen prosent.</p></div>
+<section class="alt" id="priser"><div class="wrap">
+  <div class="sec-head" data-reveal><h2>Priser og pakker</h2><p class="lead">Fast månedspris, ingen bindingstid. Annonsebudsjettet betaler du rett til Google og Meta. Vi tar ingen prosent.</p></div>
   <div class="prices">
-    <div class="price"><h3>Synlig</h3><div class="meta">For deg under 4 mill. i omsetning</div><div class="amt">1.490 kr/mnd</div><div class="meta">Oppsett 4.900 kr · ingen annonser</div>
+    <div class="price" data-reveal><h3>Synlig</h3><div class="meta">For deg under 4 mill. i omsetning</div><div class="amt">1.490 kr/mnd</div><div class="meta">Oppsett 4.900 kr · ingen annonser</div>
       <ul><li>Google Bedriftsprofil</li><li>Gule Sider, 1881, Proff, Mittanbud</li><li>QR og rutine for anmeldelser</li><li>Kvartalsvis gjennomgang</li></ul></div>
-    <div class="price pop"><span class="tag">Mest populær</span><h3>Kundebooking</h3><div class="meta">4–8 mill. i omsetning</div><div class="amt">5.900 kr/mnd</div><div class="meta">Oppsett 9.900 kr · annonsebudsjett fra 12.000 kr</div>
+    <div class="price pop" data-reveal><span class="tag">Mest populær</span><h3>Kundebooking</h3><div class="meta">4–8 mill. i omsetning</div><div class="amt">5.900 kr/mnd</div><div class="meta">Oppsett 9.900 kr · annonsebudsjett fra 12.000 kr</div>
       <ul><li>Alt i Synlig</li><li>Google Ads bygget og driftet</li><li>Landingsside og varsel på SMS</li><li>Eksklusivt i ditt område</li></ul></div>
-    <div class="price"><h3>Eksklusiv</h3><div class="meta">8–15 mill. i omsetning</div><div class="amt">9.900 kr/mnd</div><div class="meta">Oppsett 14.900 kr · annonsebudsjett fra 18.000 kr</div>
+    <div class="price" data-reveal><h3>Eksklusiv</h3><div class="meta">8–15 mill. i omsetning</div><div class="amt">9.900 kr/mnd</div><div class="meta">Oppsett 14.900 kr · annonsebudsjett fra 18.000 kr</div>
       <ul><li>Alt i Kundebooking</li><li>To områder</li><li>Google + Meta-annonser</li><li>Ukentlig rapport</li></ul></div>
-    <div class="price"><h3>Pro</h3><div class="meta">15 mill.+ i omsetning</div><div class="amt">fra 14.900 kr/mnd</div><div class="meta">Oppsett etter avtale · budsjett fra 25.000 kr</div>
+    <div class="price" data-reveal><h3>Pro</h3><div class="meta">15 mill.+ i omsetning</div><div class="amt">fra 14.900 kr/mnd</div><div class="meta">Oppsett etter avtale · budsjett fra 25.000 kr</div>
       <ul><li>Alt i Eksklusiv</li><li>Flere områder</li><li>Månedlig strategimøte</li><li>Egen kontaktperson</li></ul></div>
   </div>
+  <p class="fotnote">Annonsebudsjettet betaler du rett til Google.</p>
   {TRUST}
   <p style="margin-top:28px"><a class="link" href="/priser-og-pakker">Se alle priser og pakker →</a></p>
 </div></section>
 
 <section id="faq"><div class="wrap">
-  <div class="sec-head"><h2>Spørsmål, besvart.</h2></div>
+  <div class="sec-head" data-reveal><h2>Spørsmål, besvart.</h2></div>
   <div class="faq">{faq_items(FAQ)}</div>
   <div class="eyebrow faq-sub">Det vi oftest får høre på telefon</div>
   <div class="faq">{faq_items(OBJ)}</div>
 </div></section>
 {cta()}
 """
-
 # ---------- Tjenester ----------
 TJ = [
     ("Google Bedriftsprofil", "Vi setter opp og verifiserer profilen din på Google Maps og Søk, med riktige kategorier, åpningstider og tjenester. Så holder vi den aktiv med jevnlige innlegg, slik at du dukker opp når folk i området søker etter det du driver med. Det samme oppsettet gjør deg lesbar for ChatGPT og Googles AI-modus, og vi måler hvor mange som finner deg den veien."),
@@ -274,10 +409,10 @@ TJ = [
 tjenester = f"""
 <section class="page-head"><div class="wrap">
   <h1>Dette gjør vi</h1>
-  <p class="lead">Vi sørger for at folk som skal pusse opp havner hos deg og bare deg, og at de får svar før konkurrenten rekker å ringe tilbake. Her er delene vi setter sammen.</p>
+  <p class="lead">Målet er at folk som skal pusse opp havner hos deg og bare deg, og at de får svar før konkurrenten rekker å ringe tilbake. Her er delene vi setter sammen.</p>
 </div></section>
 <section style="padding-top:0"><div class="wrap">
-  <div class="grid g2">{''.join(f'<div class="card"><h3>{t}</h3><p>{d}</p></div>' for t, d in TJ)}</div>
+  <div class="grid g2">{''.join(xcard(t, d) for t, d in TJ)}</div>
   <p style="margin-top:32px">Se hva dette koster under <a class="link" href="/priser-og-pakker">Priser og pakker</a>.</p>
 </div></section>
 {cta()}
@@ -286,9 +421,11 @@ tjenester = f"""
 # ---------- Priser ----------
 def pkg(name, desc, amt, paras, pop=False):
     tag = '<span class="tag">Mest populær</span>' if pop else ""
-    body = "".join(f"<p>{p}</p>" for p in paras)
+    pid = name.lower().replace(" ", "-")   # /priser-og-pakker#synlig – «Se pakken →» i tjenestekortene peker hit
+    første, resten = "".join(f"<p>{p}</p>" for p in paras[:1]), "".join(f"<p>{p}</p>" for p in paras[1:])
+    body = første + (f'<details class="pkg-more" open><summary>Hva er med {CHEV}</summary>{resten}</details>' if resten else "")
     cls = "pkg pop-pkg" if pop else "pkg"
-    return f'<div class="{cls}">{tag}<div class="pkg-head"><h2>{name}</h2><div class="amt">{amt}</div></div><p class="desc">{desc}</p>{body}</div>'
+    return f'<div class="{cls}" id="{pid}">{tag}<div class="pkg-head"><h2>{name}</h2><div class="amt">{amt}</div></div><p class="desc">{desc}</p>{body}</div>'
 
 PK = [
     ("Synlig", "Bedriften blir synlig på Google og Google Maps og lett å finne. Satt opp én gang, målt hvert kvartal, ingen annonser.", "1.490 kr/mnd", [
@@ -370,16 +507,16 @@ kontakt = f"""
 omoss = f"""
 <section class="page-head"><div class="wrap">
   <h1>Om HiFive Studio</h1>
-  <p class="lead">Vi gjør håndverkerbedrifter synlige der kundene faktisk leter, og drifter det videre, så du slipper.</p>
+  <p class="lead">Jeg gjør håndverkerbedrifter synlige der kundene faktisk leter, og drifter det videre, så du slipper.</p>
 </div></section>
 <section style="padding-top:0"><div class="wrap">
-  <div class="prose"><p style="font-size:19px">HiFive Studio er startet av Tobias Svendsen, rørlegger med 14 års erfaring fra håndverksbransjen. Jeg vet hvordan det er å drive en liten bedrift der jobben tar all tid, og nettside, Google og sosiale medier blir liggende. Derfor bygde jeg HiFive: vi setter opp synligheten din én gang, og drifter den etterpå, så du kan bruke tiden på kundene dine i stedet for på skjermen.</p></div>
-  <h2 style="margin:64px 0 28px">Hvorfor velge oss?</h2>
+  <div class="prose"><p style="font-size:19px">Jeg heter Tobias Svendsen og har vært rørlegger i 14 år. Jeg vet hvordan det er å drive en liten bedrift der jobben tar all tid, og nettside, Google og sosiale medier blir liggende. Derfor startet jeg HiFive Studio. Jeg setter opp synligheten din én gang og drifter den etterpå, så du kan bruke tiden på kundene dine i stedet for på skjermen.</p></div>
+  <h2 style="margin:64px 0 28px">Hvorfor velge meg?</h2>
   <div class="grid g2">
-    <div class="card"><h3>Erfaring</h3><p>Vi kjenner bransjen din fra innsiden, ikke bare fra et byråkontor.</p></div>
-    <div class="card"><h3>Fast pris</h3><p>Fast månedspris, ingen bindingstid, og vi tar aldri prosent av annonsebudsjettet ditt.</p></div>
-    <div class="card"><h3>Raskt</h3><p>Fra ja til live på ti arbeidsdager. Du bruker under en time på oppstarten.</p></div>
-    <div class="card"><h3>Fleksibelt</h3><p>Fra Google-profil og annonser til sosiale medier. Én kontaktperson, én faktura.</p></div>
+    <div class="card" data-reveal><h3>Erfaring</h3><p>Jeg kjenner bransjen din fra innsiden, ikke bare fra et byråkontor.</p></div>
+    <div class="card" data-reveal><h3>Fast pris</h3><p>Fast månedspris, ingen bindingstid, og jeg tar aldri prosent av annonsebudsjettet ditt.</p></div>
+    <div class="card" data-reveal><h3>Raskt</h3><p>Fra ja til live på ti arbeidsdager. Du bruker under en time på oppstarten.</p></div>
+    <div class="card" data-reveal><h3>Fleksibelt</h3><p>Fra Google-profil og annonser til sosiale medier. Én kontaktperson, én faktura.</p></div>
   </div>
 </div></section>
 {cta()}
@@ -467,4 +604,15 @@ for slug, title, desc, body in PAGES:
         d = OUT / slug
         d.mkdir(exist_ok=True)
         (d / "index.html").write_text(page(slug, title, desc, body), encoding="utf-8")
+
+# N5: sitemap.xml lages her, lastmod = datoen for siste commit i git (demoer og 404 er aldri med)
+import subprocess
+try:
+    LASTMOD = subprocess.run(["git", "-C", str(OUT), "log", "-1", "--format=%cs"], capture_output=True, text=True).stdout.strip()
+except OSError:
+    LASTMOD = ""
+urls = "".join(f'<url><loc>https://hifivestudio.no/{"" if s == "index" else s}</loc>' + (f"<lastmod>{LASTMOD}</lastmod>" if LASTMOD else "") + "</url>\n"
+               for s, *_ in PAGES if s != "404")
+(OUT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                                 + urls + "</urlset>\n", encoding="utf-8")
 print("ok")
