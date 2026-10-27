@@ -1,10 +1,20 @@
 #!/usr/bin/env python3
 """Bygger de statiske sidene for hifivestudio.no. Kjør: python3 build.py"""
 from pathlib import Path
+from urllib.parse import quote
 
 OUT = Path(__file__).parent
 TEL = "tel:+4791904010"
-MAIL = "mailto:post@hifivestudio.no?subject=Gratis%20gjennomgang"
+EPOST = "tobias@hifivestudio.no"   # N3 27.10: personlig adresse gir flere svar (post@ er alias til samme innboks)
+MAILTEKST = "Hei Tobias!\n\nJeg er interessert i å høre mer om en gratis gjennomgang.\n\nFirma:\nBy/område:\nTelefon:\n\nMvh"
+
+
+def mailto(emne="Gratis gjennomgang", tekst=MAILTEKST):
+    """mailto med ferdig emne og tekst (URL-kodet). &amp; fordi lenken står i et HTML-attributt."""
+    return f"mailto:{EPOST}?subject={quote(emne)}&amp;body={quote(tekst)}"
+
+
+MAIL = mailto()
 FONT = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&display=swap" rel="stylesheet">'
 
 # Hånd-logoen som tynn linjetegning bak heroen (samme sti som img/logo-hand.svg)
@@ -74,7 +84,7 @@ def page(slug, title, desc, body):
       </div>
     </div>
     <div class="legal">
-      <span>HiFive Studio · Lilleakerveien 31B, 0283 Oslo · Org.nr. 938 365 180 · <a href="mailto:post@hifivestudio.no">post@hifivestudio.no</a> · <a href="{TEL}">91 90 40 10</a></span>
+      <span>HiFive Studio · Lilleakerveien 31B, 0283 Oslo · Org.nr. 938 365 180 · <a href="{MAIL}">{EPOST}</a> · <a href="{TEL}">91 90 40 10</a></span>
       <span>© 2026 HiFive Studio</span>
     </div>
   </div>
@@ -185,6 +195,18 @@ home = f"""
   </div>
   {REPORT}
 </div></section>
+
+<section id="bysok" class="bysok" hidden><div class="wrap">
+  <div class="sec-head"><h2>Hvor mange søker etter rørlegger der du jobber?</h2><p class="lead">Skriv byen din. Tallene er Googles egne, fra de siste tolv månedene.</p></div>
+  <div class="bysok-felt">
+    <label class="sr" for="by">Skriv byen din</label>
+    <input id="by" list="byer" placeholder="Skriv byen din" autocomplete="off" enterkeyhint="search">
+    <datalist id="byer"></datalist>
+    <button class="btn" id="vis" type="button">Vis</button>
+  </div>
+  <div id="bysvar" aria-live="polite"></div>
+</div></section>
+<script src="/js/bysok.js" defer></script>
 
 <section id="helsesjekk"><div class="wrap">
   <div class="sec-head"><h2>Slik ser en helsesjekk ut</h2><p class="lead">Fem punkter, med tall fra ditt område. Slik ser resultatet ut. Tallene er typiske for et rørleggerfirma i en mellomstor by.</p></div>
@@ -334,7 +356,7 @@ kontakt = f"""
 <section style="padding-top:0"><div class="wrap">
   <div class="contact-grid">
     <div class="card"><span class="eyebrow">Telefon</span><a href="{TEL}">91 90 40 10</a></div>
-    <div class="card"><span class="eyebrow">E-post</span><a href="mailto:post@hifivestudio.no">post@hifivestudio.no</a></div>
+    <div class="card"><span class="eyebrow">E-post</span><a href="{MAIL}">{EPOST}</a></div>
   </div>
   <div class="prose" style="margin-top:48px">
     <h2>Be om gratis gjennomgang</h2>
@@ -363,7 +385,7 @@ omoss = f"""
 {cta()}
 """
 
-ADR = '<p>HiFive Studio<br>Lilleakerveien 31B<br>0283 Oslo<br>Org.nr. 938 365 180<br><a class="link" href="mailto:post@hifivestudio.no">post@hifivestudio.no</a></p>'
+ADR = f'<p>HiFive Studio<br>Lilleakerveien 31B<br>0283 Oslo<br>Org.nr. 938 365 180<br><a class="link" href="{MAIL}">{EPOST}</a></p>'
 
 vilkar = f"""
 <section class="page-head"><div class="wrap"><h1>Vilkår</h1><p class="muted" style="margin-top:16px">Sist oppdatert: 21. oktober 2026</p></div></section>
@@ -383,7 +405,7 @@ vilkar = f"""
 """
 
 personvern = f"""
-<section class="page-head"><div class="wrap"><h1>Personvernerklæring</h1><p class="muted" style="margin-top:16px">Sist oppdatert: 21. oktober 2026</p></div></section>
+<section class="page-head"><div class="wrap"><h1>Personvernerklæring</h1><p class="muted" style="margin-top:16px">Sist oppdatert: 27. oktober 2026</p></div></section>
 <section style="padding-top:0"><div class="wrap prose">
 <p>HiFive Studio (HIFIVESTUDIO SVENDSEN, org.nr. 938 365 180) er behandlingsansvarlig for personopplysninger som samles inn gjennom hifivestudio.no og i kundeforhold. Denne erklæringen forklarer hvilke opplysninger vi samler inn, hvorfor, og hvilke rettigheter du har.</p>
 <h2>Hvilke opplysninger vi samler inn</h2>
@@ -392,6 +414,8 @@ personvern = f"""
 <p>Når du besøker nettsiden: vår driftsleverandør kan registrere teknisk informasjon som IP-adresse og nettlesertype i serverlogger, for sikkerhet og drift.</p>
 <h2>Hvorfor vi behandler opplysningene</h2>
 <p>For å svare på henvendelsen din og gi deg en gjennomgang (berettiget interesse), for å inngå og oppfylle avtalen med deg som kunde (avtale), og for å oppfylle krav i bokføringsloven (rettslig forpliktelse).</p>
+<h2>Når vi kontakter bedrifter</h2>
+<p>Vi bruker offentlige firmaopplysninger (Brønnøysundregistrene, bedriftens nettside og Google-profil) og bedriftens generelle e-postadresse for å kontakte bedrifter om våre tjenester. Grunnlaget er berettiget interesse (personvernforordningen art. 6 nr. 1 f). Si fra, så kontakter vi dere ikke igjen.</p>
 <h2>Hvem vi deler opplysninger med</h2>
 <p>Vi bruker følgende leverandører som behandler opplysninger på våre vegne (databehandlere):</p>
 <ul>
