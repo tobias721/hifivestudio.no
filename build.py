@@ -104,10 +104,10 @@ def cta(title="Klar for flere kunder?"):
 
 SERVICES = [
     ("Google Bedriftsprofil", "Profilen din på Google Maps og Søk blir satt opp, verifisert og holdt aktiv, så du dukker opp når folk i området søker. Og når ChatGPT eller Googles AI anbefaler rørleggere, er det denne profilen de leser."),
-    ("Google Ads og Meta-annonser", "Vi bygger og drifter annonsene som vises når folk i området ditt søker etter det du gjør. Annonsebudsjettet betaler du rett til Google . Vi tar ingen prosent."),
+    ("Google Ads og Meta-annonser", "Vi bygger og drifter annonsene som vises når folk i området ditt søker etter det du gjør. Annonsebudsjettet betaler du rett til Google. Vi tar ingen prosent."),
     ("Landingsside som gir henvendelser", "En side laget for én ting: at den som klikker tar kontakt. Kort, mobilvennlig, med skjema som kvalifiserer kunden."),
     ("Varsel under 30 sekunder", "Du får SMS og e-post med navn, telefon og hva det gjelder under 30 sekunder etter at skjemaet er sendt."),
-    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram. Du sender bilder fra jobbene . Vi tar resten."),
+    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram. Du sender bilder fra jobbene. Vi tar resten."),
     ("Økonomisk rapport", "Tallene i kroner, ikke klikk og visninger: hva som er brukt, hvor mange henvendelser det ga, og hva hver kostet."),
 ]
 
@@ -238,7 +238,7 @@ home = f"""
 </div></section>
 
 <section><div class="wrap">
-  <div class="sec-head"><h2>Priser og pakker</h2><p class="lead">Fast månedspris, ingen bindingstid. Annonsebudsjettet betaler du rett til Google og Meta . Vi tar ingen prosent.</p></div>
+  <div class="sec-head"><h2>Priser og pakker</h2><p class="lead">Fast månedspris, ingen bindingstid. Annonsebudsjettet betaler du rett til Google og Meta. Vi tar ingen prosent.</p></div>
   <div class="prices">
     <div class="price"><h3>Synlig</h3><div class="meta">For deg under 4 mill. i omsetning</div><div class="amt">1.490 kr/mnd</div><div class="meta">Oppsett 4.900 kr · ingen annonser</div>
       <ul><li>Google Bedriftsprofil</li><li>Gule Sider, 1881, Proff, Mittanbud</li><li>QR og rutine for anmeldelser</li><li>Kvartalsvis gjennomgang</li></ul></div>
@@ -265,10 +265,10 @@ home = f"""
 # ---------- Tjenester ----------
 TJ = [
     ("Google Bedriftsprofil", "Vi setter opp og verifiserer profilen din på Google Maps og Søk, med riktige kategorier, åpningstider og tjenester. Så holder vi den aktiv med jevnlige innlegg, slik at du dukker opp når folk i området søker etter det du driver med. Det samme oppsettet gjør deg lesbar for ChatGPT og Googles AI-modus, og vi måler hvor mange som finner deg den veien."),
-    ("Google Ads og Meta-annonser", "Vi bygger og styrer annonsene som vises når folk i området ditt søker etter tjenestene dine. Vi skriver annonsetekstene, velger søkeordene og justerer løpende. Annonsebudsjettet betaler du direkte til Google og Meta . Vi tar ingen prosent av det."),
+    ("Google Ads og Meta-annonser", "Vi bygger og styrer annonsene som vises når folk i området ditt søker etter tjenestene dine. Vi skriver annonsetekstene, velger søkeordene og justerer løpende. Annonsebudsjettet betaler du direkte til Google og Meta. Vi tar ingen prosent av det."),
     ("Landingsside som gir henvendelser", "En side laget for én ting: at den som klikker faktisk tar kontakt. Kort, tydelig og bygget for mobil, med et skjema som kvalifiserer kunden før du bruker tid på dem."),
     ("Varsel under 30 sekunder", "Når noen fyller ut skjemaet, får du SMS og e-post med en gang: navn, telefon, adresse og hva det gjelder. Du ringer tilbake mens de fortsatt sitter med telefonen i hånda, før konkurrenten rekker det."),
-    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse fra jobbene dine . Vi tar resten."),
+    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse fra jobbene dine. Vi tar resten."),
     ("Økonomisk rapport", "Du får tallene i kroner, ikke klikk og visninger: hva som er brukt, hvor mange henvendelser det ga, og hva hver henvendelse kostet."),
 ]
 tjenester = f"""
@@ -327,7 +327,7 @@ PK = [
         "Alt i Eksklusiv · flere områder · hjelp til å samle Google-anmeldelser etter fullført jobb · ukentlig rapport · månedlig strategimøte · egen kontaktperson.",
         "<strong>Passer for:</strong> bedrifter med flere lag og kapasitet til å ta imot volum. Vi setter opp Pro etter en gjennomgang av bedriften. Ta kontakt.",
     ]),
-    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse . Vi tar resten.", "3.990 kr/mnd", [
+    ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse. Vi tar resten.", "3.990 kr/mnd", [
         "<strong>Oppsett 4.900 kr.</strong> Tillegg som kan legges til alle pakker. Ingen bindingstid.",
         "8 innlegg i måneden på Facebook og 8 på Instagram · vi skriver all tekst · vi planlegger og publiserer på tidspunktene som gir mest · løpende drift av kontoene.",
         "<strong>Slik fungerer det:</strong> Du sender oss bilder og videoer fra jobbene dine, sammen med en kort beskrivelse av hva som er gjort, for eksempel «komplett bad på Majorstuen, nytt røropplegg og varmekabler». Noen setninger holder. Mobilbilder holder fint.",
