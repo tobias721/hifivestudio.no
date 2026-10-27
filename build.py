@@ -5,7 +5,15 @@ from pathlib import Path
 OUT = Path(__file__).parent
 TEL = "tel:+4791904010"
 MAIL = "mailto:post@hifivestudio.no?subject=Gratis%20gjennomgang"
-FONT = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">'
+FONT = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&display=swap" rel="stylesheet">'
+
+# Hånd-logoen som tynn linjetegning bak heroen (samme sti som img/logo-hand.svg)
+HAND = '<svg class="hero-hand" aria-hidden="true" viewBox="100 90 265 320" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M185,250 L185,130 L225,130 L225,105 L265,105 L265,130 L305,130 L305,185 L345,185 L345,330 L325,360 L325,392 L225,392 L225,380 C225,366 211.3,351.9 200,335.4 L121,223 C113,211 126,201 142,208 L185,250 Z"/><path d="M225,130 L225,220 L265,220 L265,130"/><path d="M305,130 L305,325"/><path d="M225,325 L225,255 L265,255 L265,325"/></svg>'
+
+# Ekte bilde av Tobias: legg img/tobias.webp (eller .jpg), 1200 px bredt. Mangler fila, bygges seksjonen uten bilde.
+PHOTO = next((p for p in ("tobias.webp", "tobias.jpg") if (OUT / "img" / p).exists()), None)
+
+TRUST = '<ul class="trust"><li>Org.nr. 938 365 180</li><li>Ingen binding</li><li>Du eier alt: domene, nettside og Google-profil</li></ul>'
 
 
 def page(slug, title, desc, body):
@@ -22,6 +30,9 @@ def page(slug, title, desc, body):
 <meta property="og:description" content="{desc}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{canon}">
+<meta property="og:site_name" content="HiFive Studio">
+<meta property="og:locale" content="nb_NO">
+<meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#0b0c0e">
 <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
 {FONT}
@@ -97,6 +108,47 @@ STEPS = [
     ("Rapport i kroner", "Brukt, henvendelser, pris per henvendelse. Ingen klikk og visninger – tall du kan ta en beslutning på."),
 ]
 
+# Helsesjekken – eksempeltall, typiske for et rørleggerfirma i en mellomstor by
+HEALTH = [
+    ("H1", "Søketall", "100–1 000", "søk i måneden på «rørlegger + din by»", "Hvor mange i byen din som leter etter det du gjør, hver måned."),
+    ("H2", "Hva en ny kunde koster", "1 000–5 000 kr", "per henvendelse via Google (anslag)", "Klikkprisen i ditt område regnet om til kroner per henvendelse. Her: ca. 25–100 kr per klikk."),
+    ("H3", "Mot de tre øverste", "0 mot 150", "Google-omtaler, mot nr. 1 på kartet", "Du mot de tre øverste i søket, punkt for punkt: omtaler, egen side, telefon, bilder av egne jobber."),
+    ("H4", "AI-synlighet", "Svak", "lite for ChatGPT og Googles AI å lese (anslag)", "Om firmaet har det AI-tjenestene henter fra: komplett profil, omtaler og like opplysninger overalt."),
+    ("H5", "Hva bør fikses først", "2 ulike", "telefonnumre på Google og nettsiden", "Tre konkrete tiltak sortert etter effekt. De du kan gjøre selv i dag, får du gratis."),
+]
+
+REPORT = """<aside class="report" aria-label="Utsnitt fra en ekte helsesjekk">
+  <div class="report-top"><span class="eyebrow">Helsesjekk</span><span class="report-tag">Eksempel</span></div>
+  <div class="report-firm">Rørleggerfirma i en mellomstor norsk by</div>
+  <div class="report-date">Oktober 2026</div>
+  <dl>
+    <div><dt>Søk i måneden, «rørlegger + din by»</dt><dd>100–1 000</dd></div>
+    <div><dt>Klikkpris, toppen av siden</dt><dd>ca. 25–100 kr</dd></div>
+    <div><dt>Telefonnumre i omløp</dt><dd>2 ulike</dd></div>
+  </dl>
+  <div class="bars">
+    <div class="bars-label">Google-omtaler</div>
+    <div class="bar low"><span>Dette firmaet</span><i style="--w:0%"></i><b>0</b></div>
+    <div class="bar"><span>Nr. 1 i området</span><i style="--w:100%"></i><b>150</b></div>
+    <div class="bar"><span>Nr. 2</span><i style="--w:40%"></i><b>60</b></div>
+    <div class="bar"><span>Nr. 3</span><i style="--w:27%"></i><b>40</b></div>
+  </div>
+  <div class="report-fix"><span class="eyebrow">Fiks først</span><p>Samme telefonnummer overalt, og en fast rutine for å be om omtaler etter hver jobb.</p></div>
+</aside>"""
+
+
+def tobias():
+    text = """<div class="me-text">
+    <span class="eyebrow">Hvem du snakker med</span>
+    <p class="me-quote">Rørlegger i 14 år. Jeg vet hvordan kundene finner dere, for jeg har vært på den andre siden.</p>
+    <p class="muted">Tobias Svendsen, HiFive Studio · <a class="link" href="/om-oss">Om oss</a></p>
+  </div>"""
+    if not PHOTO:
+        return f'<section class="me"><div class="wrap">{text}</div></section>'
+    img = f'<figure class="me-photo"><img src="/img/{PHOTO}" alt="Tobias Svendsen i arbeidstøy" width="1200" height="1500" loading="lazy" decoding="async"></figure>'
+    return f'<section class="me"><div class="wrap me-grid">{img}{text}</div></section>'
+
+
 FAQ = [
     ("Hva er HiFive Studio?", "Vi sørger for at folk som skal pusse opp havner hos deg — og bare deg. Vi kjører annonsene, lager siden de lander på, og sender henvendelsen rett på mobilen din sekunder etter at den kommer inn. Tobias som driver HiFive er rørlegger med 14 år i faget, så vi kjenner bransjen fra innsiden."),
     ("Hvorfor anbefaler dere minst 3 måneder med annonsering?", "Fordi Google og Meta må lære hvem som er riktig kunde for deg. Måned 1 samler systemet data og finner ut hvilke søk og hvilke folk som faktisk fører til jobber — da er henvendelsene færre og dyrere. Måned 2 begynner vi å kutte det som ikke virker og legge pengene der de gir resultat. Måned 3 er kampanjen innkjørt, og det er da du ser hva den faktisk kan levere. Stopper du etter fire uker, betaler du for læringen uten å få gevinsten. Derfor anbefaler vi 90 dager — men vi har ingen bindingstid, og du kan si opp når du vil."),
@@ -121,15 +173,27 @@ def faq_items(items):
 
 # ---------- Forside ----------
 home = f"""
-<section class="hero"><div class="wrap">
-  <div class="eyebrow">Gratis gjennomgang</div>
-  <h1 style="margin-top:18px">Kundene dine googler. <span class="soft">Sørg for at de finner deg.</span></h1>
-  <p class="lead">Vi setter opp Google-annonsene, landingssiden og sporingen for håndverkerbedrifter — og drifter alt videre. Du tar telefonen. Fast månedspris, ingen bindingstid, og annonsebudsjettet betaler du rett til Google.</p>
-  <div class="hero-actions">
-    <a class="btn" href="/kontakt">Be om gratis gjennomgang</a>
-    <a class="link" href="{TEL}">Eller ring 91 90 40 10</a>
+<section class="hero">{HAND}<div class="wrap hero-grid">
+  <div>
+    <div class="eyebrow">Gratis gjennomgang</div>
+    <h1 style="margin-top:18px">Kundene dine googler. <span class="soft">Sørg for at de finner deg.</span></h1>
+    <p class="lead">Vi setter opp Google-annonsene, landingssiden og sporingen for håndverkerbedrifter — og drifter alt videre. Du tar telefonen. Fast månedspris, ingen bindingstid, og annonsebudsjettet betaler du rett til Google.</p>
+    <div class="hero-actions">
+      <a class="btn" href="/kontakt">Be om gratis gjennomgang</a>
+      <a class="link" href="{TEL}">Eller ring 91 90 40 10</a>
+    </div>
   </div>
+  {REPORT}
 </div></section>
+
+<section id="helsesjekk"><div class="wrap">
+  <div class="sec-head"><h2>Slik ser en helsesjekk ut</h2><p class="lead">Fem punkter, med tall fra ditt område. Slik ser resultatet ut. Tallene er typiske for et rørleggerfirma i en mellomstor by.</p></div>
+  <ol class="health">
+    {''.join(f'<li class="hcard"><div class="hcard-top"><span class="hnum">{n}</span><span class="ex">Eksempel</span></div><h3>{t}</h3><div class="hval">{v}</div><div class="hunit">{u}</div><p>{d}</p></li>' for n, t, v, u, d in HEALTH)}
+  </ol>
+</div></section>
+
+{tobias()}
 
 <section id="tjenester"><div class="wrap">
   <div class="sec-head"><h2>Dette gjør vi</h2><p class="lead">Du trenger ikke alt. Vi setter sammen det som passer bedriften din, og drifter det videre.</p></div>
@@ -163,6 +227,7 @@ home = f"""
     <div class="price"><h3>Pro</h3><div class="meta">15 mill.+ i omsetning</div><div class="amt">fra 14.900 kr/mnd</div><div class="meta">Oppsett etter avtale · budsjett fra 25.000 kr</div>
       <ul><li>Alt i Eksklusiv</li><li>Flere områder</li><li>Månedlig strategimøte</li><li>Egen kontaktperson</li></ul></div>
   </div>
+  {TRUST}
   <p style="margin-top:28px"><a class="link" href="/priser-og-pakker">Se alle detaljer — priser og pakker →</a></p>
 </div></section>
 
@@ -255,6 +320,7 @@ priser = f"""
 </div></section>
 <section style="padding-top:0"><div class="wrap">
   {''.join(pkg(n, d, a, p, pop=(n == 'Kundebooking')) for n, d, a, p in PK)}
+  {TRUST}
 </div></section>
 {cta()}
 """
