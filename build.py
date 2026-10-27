@@ -439,7 +439,7 @@ personvern = f"""
 <h2>Dine rettigheter</h2>
 <p>Du har rett til å be om innsyn i hvilke opplysninger vi har om deg, få dem rettet eller slettet, kreve begrensning av behandlingen, protestere mot behandling basert på berettiget interesse, og få opplysningene utlevert i et vanlig format (dataportabilitet).</p>
 <p>Behandling basert på samtykke kan du trekke tilbake når som helst.</p>
-<p>Send forespørsler til post@hifivestudio.no. Vi svarer innen 30 dager.</p>
+<p>Send forespørsler til {EPOST}. Vi svarer innen 30 dager.</p>
 <p>Er du uenig i hvordan vi behandler opplysningene dine, kan du klage til Datatilsynet: datatilsynet.no.</p>
 <h2>Kontakt</h2>{ADR}
 </div></section>
@@ -453,7 +453,7 @@ PAGES = [
     ("index", "HiFive Studio – Google-synlighet for håndverkere", "Vi setter opp Google-profil, annonser og landingsside for håndverkerbedrifter – og drifter det videre. Fast månedspris, ingen bindingstid.", home),
     ("tjenester", "Tjenester – HiFive Studio", "Google Bedriftsprofil, Google Ads og Meta-annonser, landingsside, varsel under 30 sekunder, sosiale medier og rapport i kroner.", tjenester),
     ("priser-og-pakker", "Priser og pakker – HiFive Studio", "Synlig fra 1.490 kr/mnd, Kundebooking 5.900 kr/mnd, Eksklusiv 9.900 kr/mnd. Ingen bindingstid, ingen prosent av annonsebudsjettet.", priser),
-    ("kontakt", "Kontakt – HiFive Studio", "Ring 91 90 40 10 eller send e-post til post@hifivestudio.no for en gratis gjennomgang.", kontakt),
+    ("kontakt", "Kontakt – HiFive Studio", "Ring 91 90 40 10 eller send e-post til tobias@hifivestudio.no for en gratis gjennomgang.", kontakt),
     ("om-oss", "Om oss – HiFive Studio", "HiFive Studio drives av Tobias Svendsen, rørlegger med 14 år i faget. Vi gjør håndverksbedrifter synlige på Google og sender henvendelsene rett på mobilen.", omoss),
     ("vilkar", "Vilkår – HiFive Studio", "Vilkår for bruk av hifivestudio.no og tjenestene til HiFive Studio.", vilkar),
     ("personvern", "Personvernerklæring – HiFive Studio", "Hvordan HiFive Studio behandler personopplysninger.", personvern),
