@@ -165,7 +165,7 @@ MER = {
         "Inngår i Kundebooking (5.900 kr/mnd) og oppover.", "kundebooking"),
     # N6 29.10: to piloter, tekst ordrett fra Til-Code N6 (Tobias)
     "AI-assistent for tilbud": ("tilbud", ['Lager tilbudsutkastet ut fra tilbudene dere har sendt før', 'Bruker prislista dere allerede har fra grossisten', 'Dere ser over, retter og sender'], 'Dere sender oss 10–20 tidligere tilbud og prislista dere bruker. Vi setter opp assistenten på det. Du skriver hva jobben skal inneholde, og får et ferdig utkast du retter og sender til kunden.', 'Pilot: 9.990 kr i oppsett og 1.990 kr/mnd. De første firmaene er med og former den. Ingen binding.', "tilbudsassistent"),
-    "Arbeidskalender": ("kalender", ['Alle jobber på én tavle: kunde, adresse og avtale', 'Dra jobben over på riktig montør', 'Legg inn fra mobilen, med bilde av lappen eller teksten fra e-posten'], 'Vi setter opp tavla med montørene deres og legger inn jobbene som ligger i dag. Dere bruker den fra mobil og PC. Vi bygger den sammen med de første firmaene, så den blir sånn dere faktisk jobber.', 'Pilot: pris etter avtale. Ingen binding.', "arbeidskalender"),
+    "Arbeidskalender": ("kalender", ['Alle jobber på én tavle: kunde, adresse og avtale', 'Dra jobben over på riktig montør', 'Legg inn fra mobilen, med bilde av lappen eller teksten fra e-posten'], 'Vi setter opp tavla med montørene deres og legger inn jobbene som ligger i dag. Dere bruker den fra mobil og PC. Vi bygger den sammen med de første firmaene, så den blir sånn dere faktisk jobber.', 'Pilot: 990 kr/mnd og 4.900 kr i oppsett. Ingen binding. <a class="link" href="/kalender/">Prøv demoen →</a>', "arbeidskalender"),
 }
 # H1–H5: (hvorfor dette teller, hva vi gjør med det, dette kan du gjøre selv i dag)
 MER_H = {
@@ -237,7 +237,7 @@ TJENESTER4 = [
      "Inngår i Kundebooking (5.900 kr/mnd) og oppover.", "kundebooking", "rapport"),
     # N6 29.10: piloter
     ("AI-assistent for tilbud", ['Lager tilbudsutkastet ut fra tilbudene dere har sendt før', 'Bruker prislista dere allerede har fra grossisten', 'Dere ser over, retter og sender', 'Alle tilbud samlet på ett sted'], 'Dere sender oss 10–20 tidligere tilbud og prislista dere bruker. Vi setter opp assistenten på det. Du skriver hva jobben skal inneholde, og får et ferdig utkast du retter og sender til kunden.', 'Pilot: 9.990 kr i oppsett og 1.990 kr/mnd. De første firmaene er med og former den. Ingen binding.', "tilbudsassistent", "tilbud"),
-    ("Arbeidskalender", ['Alle jobber på én tavle: kunde, adresse og avtale', 'Dra jobben over på riktig montør', 'Legg inn fra mobilen, med bilde av lappen eller teksten fra e-posten', 'Alle ser det samme, også ute på jobb'], 'Vi setter opp tavla med montørene deres og legger inn jobbene som ligger i dag. Dere bruker den fra mobil og PC. Vi bygger den sammen med de første firmaene, så den blir sånn dere faktisk jobber.', 'Pilot: pris etter avtale. Ingen binding.', "arbeidskalender", "kalender"),
+    ("Arbeidskalender", ['Alle jobber på én tavle: kunde, adresse og avtale', 'Dra jobben over på riktig montør', 'Legg inn fra mobilen, med bilde av lappen eller teksten fra e-posten', 'Alle ser det samme, også ute på jobb'], 'Vi setter opp tavla med montørene deres og legger inn jobbene som ligger i dag. Dere bruker den fra mobil og PC. Vi bygger den sammen med de første firmaene, så den blir sånn dere faktisk jobber.', 'Pilot: 990 kr/mnd og 4.900 kr i oppsett. Ingen binding. <a class="link" href="/kalender/">Prøv demoen →</a>', "arbeidskalender", "kalender"),
 ]
 JOBBTYPER = [
     ("Bad og våtrom", "Store jobber, lang beslutning", ["Folk leter i ukevis før de ringer", "Bilder av egne bad avgjør mye", "Omtaler som nevner bad veier tungt", "Annonsene må stå hele perioden, ikke én uke"]),
@@ -481,8 +481,8 @@ PK = [
         "Oppsett på deres egne tilbud og prisliste · tilbudsutkast fra en kort beskrivelse av jobben · dere retter og sender · alle tilbud samlet.",
         "<strong>Passer for:</strong> deg som bruker kveldene på tilbud, og vil bruke dem på noe annet.",
     ]),
-    ("Arbeidskalender", 'Én tavle for alle jobbene. Dra dem over på riktig montør, fra mobil eller PC.', "Pilot", [
-        "<strong>Pris etter avtale.</strong> Ingen bindingstid.",
+    ("Arbeidskalender", 'Én tavle for alle jobbene. Dra dem over på riktig montør, fra mobil eller PC.', "990 kr/mnd", [
+        "<strong>Oppsett 4.900 kr.</strong> Pilot. Ingen bindingstid og ingen oppsigelsestid. <a class=\"link\" href=\"/kalender/\">Prøv demoen →</a>",
         "Tavle med montørene deres · jobber med kunde, adresse, telefon, avtale og notat · legg inn fra mobil, med bilde av lappen eller teksten fra e-posten · alle ser det samme.",
         "<strong>Passer for:</strong> firmaer med 2–8 montører som planlegger på tavle, lapper eller i hodet i dag.",
     ]),

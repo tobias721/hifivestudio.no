@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Demo av arbeidskalenderen fra HiFive Studio: dra jobber på montører, dag- og ukevisning, legg inn jobber fra tekst eller bilde. Oppdiktede navn.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} [hidden]{display:none!important} img{max-width:100%}</style>
+<title>Arbeidskalender demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap">
+<style>
+/* Layout: tavle. Én tynn topplinje, så selve tavla (uke = montører × dager, dag = montører × klokkeslett). Pluss-knapp nede til høyre. */
+:root{
+  --bg:#f5f6f8; --flate:#ffffff; --flate2:#eef0f4; --linje:#d9dde5; --fg:#141a26; --fg2:#5b6475;
+  --aksent:#2457f5; --aksent-fg:#ffffff; --aksent-svak:#e4ebff;
+  --plan:#2457f5; --plan-bg:#e8eeff; --pagar:#d97706; --pagar-bg:#fff1dc; --ferdig:#15803d; --ferdig-bg:#e3f5e8; --fri:#8a93a6; --fri-bg:#f1f3f7;
+  --feil:#d7263d; --skygge:0 10px 30px rgba(20,26,38,.12);
+  --font:"DM Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1319; --flate:#171c25; --flate2:#1f2531; --linje:#2c3443; --fg:#eef1f6; --fg2:#a3acbd;
+  --aksent:#6d8dff; --aksent-fg:#0f1319; --aksent-svak:#1f2a4a;
+  --plan:#8aa3ff; --plan-bg:#1d2744; --pagar:#f5a623; --pagar-bg:#3a2a10; --ferdig:#4ade80; --ferdig-bg:#13301f; --fri:#8a93a6; --fri-bg:#1b2029;
+  --feil:#ff5c6f; --skygge:0 10px 30px rgba(0,0,0,.5); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1319; --flate:#171c25; --flate2:#1f2531; --linje:#2c3443; --fg:#eef1f6; --fg2:#a3acbd;
+  --aksent:#6d8dff; --aksent-fg:#0f1319; --aksent-svak:#1f2a4a;
+  --plan:#8aa3ff; --plan-bg:#1d2744; --pagar:#f5a623; --pagar-bg:#3a2a10; --ferdig:#4ade80; --ferdig-bg:#13301f; --fri:#8a93a6; --fri-bg:#1b2029;
+  --feil:#ff5c6f; --skygge:0 10px 30px rgba(0,0,0,.5); color-scheme:dark }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--aksent);outline-offset:2px}
+.app{height:100%;display:flex;flex-direction:column}
+
+/* Topp */
+.tilbake{font-size:13px;color:var(--fg2);text-decoration:none;border-right:1px solid var(--linje);padding-right:12px}
+.tilbake:hover{color:var(--fg)}
+.topp{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--flate);border-bottom:1px solid var(--linje);
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--flate)}
+.merke{display:flex;align-items:center;gap:8px;font-weight:600;letter-spacing:.01em}
+.merke small{display:block;font-weight:400;color:var(--fg2);font-size:12px;letter-spacing:0}
+.demo-pill{font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:3px 8px;border-radius:999px;background:var(--aksent-svak);color:var(--aksent);font-weight:600}
+.nav{display:flex;align-items:center;gap:6px;margin-left:auto}
+.nav .uke{min-width:150px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+.knapp{border:1px solid var(--linje);background:var(--flate);border-radius:10px;padding:7px 12px;font-weight:500;line-height:1}
+.knapp:hover{background:var(--flate2)}
+.knapp.prim{background:var(--aksent);color:var(--aksent-fg);border-color:var(--aksent)}
+.knapp.ikon{width:36px;height:36px;padding:0;display:inline-grid;place-items:center;font-size:18px}
+.segment{display:inline-flex;border:1px solid var(--linje);border-radius:10px;overflow:hidden}
+.segment button{border:0;background:transparent;padding:7px 12px;font-weight:500}
+.segment button[aria-pressed="true"]{background:var(--aksent);color:var(--aksent-fg)}
+
+/* Tavle */
+.tavle{flex:1;overflow:auto;padding-block:14px 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rute{min-width:0}
+/* Uke */
+.uke-grid{display:grid;grid-template-columns:140px repeat(6,minmax(150px,1fr));gap:6px;min-width:1040px}
+.uke-grid .hode{position:sticky;top:0;z-index:2;background:var(--bg);padding:6px 4px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg2);font-weight:600}
+.uke-grid .hode b{display:block;font-size:15px;color:var(--fg);letter-spacing:0;text-transform:none;font-weight:600;font-variant-numeric:tabular-nums}
+.uke-grid .hode.idag b{color:var(--aksent)}
+.rad-navn{display:flex;align-items:flex-start;gap:8px;padding:10px 6px;font-weight:600;position:sticky;left:0;background:var(--bg);z-index:1}
+.prikk{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:none}
+.rad-navn small{display:block;font-weight:400;color:var(--fg2);font-size:12px}
+.celle{background:var(--flate);border:1px solid var(--linje);border-radius:12px;min-height:84px;padding:6px;display:flex;flex-direction:column;gap:6px;transition:background .12s,border-color .12s}
+.celle.fri{background:var(--fri-bg);border-style:dashed}
+.celle.mal{background:var(--aksent-svak);border-color:var(--aksent)}
+/* Kort */
+.kort{position:relative;border-radius:10px;padding:8px 10px 8px 12px;background:var(--plan-bg);border:1px solid transparent;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;font-size:13px;line-height:1.3;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.kort::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:3px;background:var(--plan)}
+.kort .tid{font-variant-numeric:tabular-nums;font-weight:600;color:var(--plan);font-size:12px}
+.kort .kunde{font-weight:600;margin-top:1px}
+.kort .adr{color:var(--fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kort .hva{margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kort[data-status="pagar"]{background:var(--pagar-bg)} .kort[data-status="pagar"]::before,.kort[data-status="pagar"] .tid{background:var(--pagar);color:var(--pagar)}
+.kort[data-status="ferdig"]{background:var(--ferdig-bg)} .kort[data-status="ferdig"]::before,.kort[data-status="ferdig"] .tid{background:var(--ferdig);color:var(--ferdig)}
+.kort[data-status="ferdig"] .kunde{text-decoration:line-through;text-decoration-color:var(--fg2)}
+.kort.utildelt{background:var(--flate);border:1px dashed var(--fri)} .kort.utildelt::before{background:var(--fri)} .kort.utildelt .tid{color:var(--fri)}
+.kort.kollisjon{border-color:var(--feil);box-shadow:0 0 0 2px color-mix(in srgb,var(--feil) 25%,transparent)}
+.kort.drar{opacity:.35}
+.spok{position:fixed;z-index:50;pointer-events:none;width:200px;transform:rotate(-1.5deg);box-shadow:var(--skygge);cursor:grabbing}
+/* Dag */
+.dag-wrap{display:grid;grid-template-columns:52px 1fr;gap:0;min-width:0}
+.dag-grid{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(170px,1fr);gap:6px;min-width:0;overflow-x:auto;padding-bottom:6px}
+.kol{display:flex;flex-direction:column;min-width:0}
+.kol .hode{display:flex;align-items:center;gap:8px;padding:6px 8px;font-weight:600;position:sticky;top:0;background:var(--bg);z-index:2}
+.kol .hode small{color:var(--fg2);font-weight:400;font-size:12px;margin-left:auto}
+.spor{position:relative;height:calc(var(--timer) * var(--time-h));background:var(--flate);border:1px solid var(--linje);border-radius:12px;
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--time-h) - 1px),var(--linje) calc(var(--time-h) - 1px),var(--linje) var(--time-h));transition:background-color .12s,border-color .12s}
+.spor.fri{background-color:var(--fri-bg);border-style:dashed}
+.spor.mal{background-color:var(--aksent-svak);border-color:var(--aksent)}
+.spor .kort{position:absolute;left:4px;right:4px;overflow:hidden;min-height:30px}
+.tidsakse{padding-top:37px}
+.tidsakse div{height:var(--time-h);font-size:11px;color:var(--fg2);font-variant-numeric:tabular-nums;transform:translateY(-7px);text-align:right;padding-right:8px}
+.naa{position:absolute;left:0;right:0;height:2px;background:var(--feil);z-index:1;pointer-events:none}
+.naa::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--feil)}
+/* Mobil liste */
+.liste{display:none}
+.liste .dagblokk{margin-bottom:18px}
+.liste h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg2)}
+.liste h3 b{color:var(--fg);text-transform:none;letter-spacing:0;font-size:16px;margin-right:6px}
+.liste .mont{display:grid;grid-template-columns:110px 1fr;gap:6px;margin-bottom:6px;align-items:start}
+.liste .mont .rad-navn{position:static;background:transparent;padding:6px 0;font-size:13px}
+
+/* Intro */
+.intro{margin:14px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));background:var(--flate);border:1px solid var(--linje);border-radius:14px}
+.intro summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;font-weight:600}
+.intro summary::-webkit-details-marker{display:none}
+.intro[open] .intro-pil{transform:rotate(180deg)}
+.intro-kropp{padding:0 16px 14px;max-width:70ch}
+.intro ol{margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px}
+.intro-fot{margin:12px 0 0;font-size:13px;color:var(--fg2)}
+.lenke{border:0;background:none;padding:0;color:var(--aksent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+/* Lærling-brikke og venteliste */
+.laerling-chip{display:inline-flex;align-items:center;gap:8px;border:1px dashed #7c3aed;background:color-mix(in srgb,#7c3aed 10%,var(--flate));border-radius:999px;padding:6px 12px 6px 10px;font-weight:600;font-size:13px;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
+.laerling-chip small{font-weight:400;color:var(--fg2)}
+.laerling-chip.spok{width:auto}
+.laerling-badge{display:inline-block;align-self:flex-start;font-size:11px;font-weight:600;color:#7c3aed;background:color-mix(in srgb,#7c3aed 12%,var(--flate));border-radius:999px;padding:2px 8px}
+.kol .hode .laerling-badge{margin-left:6px}
+.vent{background:var(--flate);border:1px solid var(--linje);border-radius:14px;padding:12px;margin-bottom:14px}
+.vent-hode{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px;font-size:13px;color:var(--fg2)}
+.vent-hode b{color:var(--fg);font-size:15px}
+.vent-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;min-height:60px;border-radius:10px;padding:4px;transition:background .12s}
+.vent-liste.mal{background:var(--aksent-svak)}
+.kort.venter{background:var(--flate2);border:1px dashed var(--fg2)} .kort.venter::before{background:var(--fg2)} .kort.venter .tid{color:var(--fg2)}
+.sjekk{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+.sjekk input{width:18px;height:18px;margin:0}
+@media (max-width:720px){ .laerling-chip small{display:none} }
+/* Flytende pluss */
+.pluss{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;border:0;background:var(--aksent);color:var(--aksent-fg);font-size:32px;line-height:1;box-shadow:var(--skygge);z-index:6;display:grid;place-items:center}
+.pluss:hover{filter:brightness(1.08)}
+.hint{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:999px;font-size:13px;z-index:6;box-shadow:var(--skygge);max-width:calc(100% - 120px)}
+.hint[hidden]{display:none}
+
+/* Dialoger */
+dialog{border:0;border-radius:16px;background:var(--flate);color:var(--fg);box-shadow:var(--skygge);padding:0;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 40px)}
+dialog::backdrop{background:rgba(10,14,22,.45)}
+.dlg{padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px}
+.dlg h2{margin:0;font-size:18px;font-weight:600;text-wrap:balance}
+.dlg .lukk{margin-left:auto}
+.dlg-topp{display:flex;align-items:center;gap:10px}
+.faner{display:flex;gap:4px;background:var(--flate2);padding:3px;border-radius:10px}
+.faner button{flex:1;border:0;background:transparent;border-radius:8px;padding:7px 6px;font-weight:500;font-size:13px}
+.faner button[aria-selected="true"]{background:var(--flate);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.felt{display:flex;flex-direction:column;gap:4px;min-width:0}
+.felt label{font-size:12px;color:var(--fg2);font-weight:500}
+.felt input,.felt select,.felt textarea{border:1px solid var(--linje);border-radius:9px;padding:9px 10px;background:var(--flate);width:100%;min-width:0}
+.felt textarea{min-height:92px;resize:vertical}
+.rad2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rad3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.handlinger{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.handlinger .venstre{margin-right:auto}
+.melding{font-size:13px;color:var(--fg2)}
+.funnet{font-size:13px;background:var(--aksent-svak);color:var(--fg);padding:8px 10px;border-radius:9px}
+.funnet b{color:var(--aksent)}
+.bilde-boks{border:1px dashed var(--linje);border-radius:12px;padding:14px;text-align:center;color:var(--fg2);font-size:13px}
+.bilde-boks img{max-width:100%;max-height:180px;border-radius:8px;display:block;margin:8px auto 0}
+/* Kortpanel */
+.detalj dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px}
+.detalj dt{color:var(--fg2)} .detalj dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.status-valg{display:flex;gap:6px;flex-wrap:wrap}
+.status-valg button{border:1px solid var(--linje);background:var(--flate);border-radius:999px;padding:6px 12px;font-size:13px}
+.status-valg button[aria-pressed="true"]{border-color:transparent;font-weight:600}
+.status-valg button[data-s="plan"][aria-pressed="true"]{background:var(--plan-bg);color:var(--plan)}
+.status-valg button[data-s="pagar"][aria-pressed="true"]{background:var(--pagar-bg);color:var(--pagar)}
+.status-valg button[data-s="ferdig"][aria-pressed="true"]{background:var(--ferdig-bg);color:var(--ferdig)}
+.fare{color:var(--feil);border-color:color-mix(in srgb,var(--feil) 40%,var(--linje))}
+.kopier{font-size:12px;padding:4px 8px;border-radius:6px;margin-left:6px}
+.tomt{color:var(--fg2);font-size:13px;padding:8px 2px}
+
+@media (max-width:720px){
+  .nav .uke{min-width:120px;font-size:14px}
+  .skjul-mobil{display:none}
+  .uke-grid{display:none}
+  .liste{display:block}
+  .dag-wrap{grid-template-columns:40px 1fr}
+  .dag-grid{grid-auto-columns:minmax(150px,1fr)}
+  .rad2,.rad3{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} .spok{transform:none} }
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header class="topp">
+    <a class="tilbake" href="/">← hifivestudio.no</a><div class="merke"><span aria-hidden="true">▦</span><span>Demo Rør AS<small>Arbeidskalender</small></span></div>
+    <span class="demo-pill">Demo</span>
+    <div class="segment" role="group" aria-label="Visning">
+      <button type="button" id="visDag" aria-pressed="false">Dag</button>
+      <button type="button" id="visUke" aria-pressed="true">Uke</button>
+    </div>
+    <div class="nav">
+      <button type="button" class="knapp ikon" id="forrige" aria-label="Forrige">‹</button>
+      <button type="button" class="knapp" id="idag">I dag</button>
+      <span class="uke" id="periode"></span>
+      <button type="button" class="knapp ikon" id="neste" aria-label="Neste">›</button>
+      <button type="button" class="knapp" id="ventKnapp" aria-pressed="false">På vent</button>
+      <button type="button" class="knapp skjul-mobil" id="nullstill" title="Legg inn demo-jobbene på nytt">Nullstill demo</button>
+    </div>
+    <div class="laerling-chip" id="laerlingChip" role="button" tabindex="0" title="Dra Emil til en montør for å sette ham på den dagen"><span class="prikk" style="background:#7c3aed;margin:0"></span>Emil, lærling <small>dra til en montør</small></div>
+  </header>
+
+  <details class="intro" id="intro" open>
+    <summary><span>Slik fungerer tavla</span><span class="intro-pil" aria-hidden="true">▾</span></summary>
+    <div class="intro-kropp">
+      <ol>
+        <li><b>Alle jobber på ett sted.</b> Hvert kort er én jobb: kunde, adresse, telefon, hva som skal gjøres og notat til montøren. Trykk på et kort for å ringe, åpne kart eller sette status.</li>
+        <li><b>Dra kortet dit det hører hjemme.</b> Nye jobber lander i «Ikke tildelt». Dra dem til riktig montør og dag. I dagvisningen drar du dem opp og ned i tid.</li>
+        <li><b>Lærlingen følger den han skal være med.</b> Dra brikken «Emil» til en montør, så vet alle hvem han jobber med den dagen.</li>
+        <li><b>Legg inn nye jobber med pluss-knappen.</b> Skriv selv, lim inn meldingen fra kunden (vi henter ut telefon, adresse og tid), eller ta bilde av lappen. Jobber uten dato legges «På vent».</li>
+      </ol>
+      <p class="intro-fot">Dette er en demo med oppdiktede navn. Det du endrer her lagres bare i din nettleser. <button type="button" class="lenke" id="onskeApne">Savner du noe? Si hva du vil ha i kalenderen →</button></p>
+    </div>
+  </details>
+
+  <main class="tavle" id="tavle"></main>
+</div>
+
+<!-- Ønsker -->
+<dialog id="onskeDlg" aria-labelledby="onskeTittel">
+  <form class="dlg" id="onskeSkjema" method="dialog" novalidate>
+    <div class="dlg-topp"><h2 id="onskeTittel">Hva vil du ha i kalenderen?</h2><button type="button" class="knapp ikon lukk" data-lukk aria-label="Lukk">×</button></div>
+    <p class="melding" style="margin:0">Vi bygger den sammen med de første firmaene. Skriv det som mangler, det som er tungvint, eller det dere gjør på tavla i dag som den må kunne.</p>
+    <div class="felt"><label for="oTekst">Ditt ønske</label><textarea id="oTekst" placeholder="F.eks. at montøren får SMS når han får en ny jobb, eller at jeg kan se kjøreruta for dagen."></textarea></div>
+    <div class="rad2">
+      <div class="felt"><label for="oNavn">Navn og firma (valgfritt)</label><input id="oNavn" placeholder="Ola, Demo Rør AS" autocomplete="off"></div>
+      <div class="felt"><label for="oTlf">Telefon eller e-post (valgfritt)</label><input id="oTlf" placeholder="Så jeg kan svare deg" autocomplete="off"></div>
+    </div>
+    <p class="melding" id="onskeFeil" hidden></p>
+    <div class="handlinger">
+      <span class="melding venstre">Går til tobias@hifivestudio.no <button type="button" class="knapp kopier" id="onskeKopier">Kopier teksten</button></span>
+      <button type="button" class="knapp" data-lukk>Avbryt</button>
+      <button type="submit" class="knapp prim">Send til Tobias</button>
+    </div>
+  </form>
+</dialog>
+
+<button type="button" class="pluss" id="plussKnapp" aria-label="Legg inn jobb">+</button>
+<div class="hint" id="hint">Dra et kort til en montør eller en annen dag. Trykk på kortet for å ringe, se kart eller endre.</div>
+
+<!-- Skjema: ny / rediger jobb -->
+<dialog id="skjemaDlg" aria-labelledby="skjemaTittel">
+  <form class="dlg" id="skjema" method="dialog" novalidate>
+    <div class="dlg-topp"><h2 id="skjemaTittel">Ny jobb</h2><button type="button" class="knapp ikon lukk" data-lukk aria-label="Lukk">×</button></div>
+    <div class="faner" role="tablist" id="faner">
+      <button type="button" role="tab" aria-selected="true" data-fane="skriv">Skriv selv</button>
+      <button type="button" role="tab" aria-selected="false" data-fane="lim">Lim inn tekst</button>
+      <button type="button" role="tab" aria-selected="false" data-fane="bilde">Bilde av lappen</button>
+    </div>
+    <div id="faneLim" hidden>
+      <div class="felt"><label for="limTekst">Lim inn e-posten eller meldingen fra kunden</label>
+        <textarea id="limTekst" placeholder="Hei! Kan dere komme og bytte blandebatteri på kjøkkenet? Lilleakerveien 31B. Passer torsdag kl 9. Mvh Kari, 91 23 45 67"></textarea></div>
+      <div class="handlinger" style="margin-top:8px"><button type="button" class="knapp prim" id="hentUt">Hent ut opplysningene</button></div>
+      <p class="melding">Vi finner telefon, adresse, dag og klokkeslett og fyller ut skjemaet. Du retter det som ble feil.</p>
+    </div>
+    <div id="faneBilde" hidden>
+      <div class="bilde-boks" id="bildeBoks">
+        <label class="knapp" for="bildeFil" style="display:inline-block">Ta bilde eller velg fil</label>
+        <input type="file" id="bildeFil" accept="image/*" capture="environment" hidden>
+        <div id="bildeVis"></div>
+        <p class="melding" style="margin:8px 0 0">Bildet lagres på kortet. I kundeversjonen leser vi lappen og fyller ut skjemaet for deg. I demoen skriver du inn selv.</p>
+      </div>
+    </div>
+    <div id="funnet" class="funnet" hidden></div>
+    <div class="rad2">
+      <div class="felt"><label for="fKunde">Kunde</label><input id="fKunde" name="kunde" required placeholder="Kari Nordmann" autocomplete="off"></div>
+      <div class="felt"><label for="fTlf">Telefon</label><input id="fTlf" name="tlf" inputmode="tel" placeholder="912 34 567" autocomplete="off"></div>
+    </div>
+    <div class="felt"><label for="fAdr">Adresse</label><input id="fAdr" name="adresse" placeholder="Storgata 12, 0184 Oslo" autocomplete="off"></div>
+    <div class="felt"><label for="fHva">Hva skal gjøres</label><input id="fHva" name="hva" required placeholder="Bytte blandebatteri på kjøkkenet" autocomplete="off"></div>
+    <label class="sjekk"><input type="checkbox" id="fVenter" name="venter"> På vent, ingen dato ennå</label>
+    <div class="felt" id="fristFelt" hidden><label for="fFrist">Når skal den gjøres, omtrent</label><input id="fFrist" name="frist" placeholder="Innen 2 uker"></div>
+    <div class="rad3" id="datoRad">
+      <div class="felt"><label for="fDato">Dato</label><input id="fDato" name="dato" type="date"></div>
+      <div class="felt"><label for="fFra">Fra</label><input id="fFra" name="fra" type="time" step="900" value="08:00" required></div>
+      <div class="felt"><label for="fTil">Til</label><input id="fTil" name="til" type="time" step="900" value="10:00" required></div>
+    </div>
+    <div class="rad2">
+      <div class="felt"><label for="fMontor">Montør</label><select id="fMontor" name="montor"></select></div>
+      <div class="felt"><label for="fStatus">Status</label><select id="fStatus" name="status"><option value="plan">Planlagt</option><option value="pagar">Pågår</option><option value="ferdig">Ferdig</option></select></div>
+    </div>
+    <div class="felt"><label for="fNotat">Notat</label><textarea id="fNotat" name="notat" style="min-height:60px" placeholder="Nøkkel under matta. Hunden er snill."></textarea></div>
+    <p class="melding" id="skjemaFeil" hidden></p>
+    <div class="handlinger">
+      <button type="button" class="knapp" data-lukk>Avbryt</button>
+      <button type="submit" class="knapp prim" id="lagre">Legg inn</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Kortpanel -->
+<dialog id="detaljDlg" aria-labelledby="detaljTittel">
+  <div class="dlg detalj">
+    <div class="dlg-topp"><h2 id="detaljTittel"></h2><button type="button" class="knapp ikon lukk" data-lukk aria-label="Lukk">×</button></div>
+    <dl id="detaljListe"></dl>
+    <div class="status-valg" id="statusValg" aria-label="Status">
+      <button type="button" data-s="plan">Planlagt</button>
+      <button type="button" data-s="pagar">Pågår</button>
+      <button type="button" data-s="ferdig">Ferdig</button>
+    </div>
+    <div class="handlinger">
+      <button type="button" class="knapp venstre fare" id="slettKnapp">Slett</button>
+      <button type="button" class="knapp" id="fjernKnapp">Fjern tildeling</button>
+      <button type="button" class="knapp" id="redigerKnapp">Rediger</button>
+    </div>
+    <div class="handlinger" id="slettBekreft" hidden>
+      <span class="melding venstre">Slette jobben for godt?</span>
+      <button type="button" class="knapp" id="slettNei">Nei</button>
+      <button type="button" class="knapp fare" id="slettJa">Ja, slett</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function(){
+'use strict';
+const NOKKEL='hifive-kalender-demo-v2';
+const DAGER=['søn','man','tir','ons','tor','fre','lør'];
+const DAGER_LANG=['søndag','mandag','tirsdag','onsdag','torsdag','fredag','lørdag'];
+const MND=['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];
+const START_T=7, SLUTT_T=17, TIME_H=64; // dagvisning 07–17
+const MONTORER=[
+  {id:'m1',navn:'Jonas Bakke',rolle:'Rørlegger',farge:'#2457f5'},
+  {id:'m2',navn:'Kristian Moe',rolle:'Rørlegger',farge:'#0f9d8a'},
+  {id:'m3',navn:'Ole Martin Lund',rolle:'Servicebil',farge:'#b45309'},
+];
+const LAERLING={id:'l1',navn:'Emil',rolle:'lærling',farge:'#7c3aed'};
+
+// ---------- tid-hjelpere ----------
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const fraIso=s=>{const [a,m,d]=s.split('-').map(Number);return new Date(a,m-1,d);};
+const tilMin=t=>{const [h,m]=t.split(':').map(Number);return h*60+m;};
+const fraMin=m=>pad(Math.floor(m/60))+':'+pad(m%60);
+const mandag=d=>{const x=new Date(d);const w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);x.setHours(0,0,0,0);return x;};
+const plussDag=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+const ukenr=d=>{const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const dag=x.getUTCDay()||7;x.setUTCDate(x.getUTCDate()+4-dag);const y=new Date(Date.UTC(x.getUTCFullYear(),0,1));return Math.ceil((((x-y)/864e5)+1)/7);};
+const idag=()=>{const d=new Date();d.setHours(0,0,0,0);return d;};
+
+// ---------- data ----------
+function demoJobber(){
+  const m=mandag(idag()); const d=n=>iso(plussDag(m,n));
+  return [
+    {id:'j1',kunde:'Kari Nordmann',tlf:'912 34 567',adresse:'Lilleakerveien 31B, Oslo',hva:'Bytte blandebatteri kjøkken',dato:d(0),fra:'08:00',til:'09:30',montor:'m1',status:'ferdig',notat:'Nøkkel under matta.'},
+    {id:'j2',kunde:'Sameiet Bjørnsletta',tlf:'22 11 22 33',adresse:'Ullernchausseen 60, Oslo',hva:'Lekkasje bad 3. etg, finne årsak',dato:d(0),fra:'10:00',til:'12:00',montor:'m1',status:'pagar',notat:'Vaktmester Tor møter oss.'},
+    {id:'j3',kunde:'Hans Petter Dahl',tlf:'982 11 220',adresse:'Vollsveien 9, Lysaker',hva:'Nytt bad, dag 3 av 8',dato:d(0),fra:'07:30',til:'15:30',montor:'m2',status:'pagar',notat:'Fliselegger kommer dag 6.'},
+    {id:'j4',kunde:'Hans Petter Dahl',tlf:'982 11 220',adresse:'Vollsveien 9, Lysaker',hva:'Nytt bad, dag 4 av 8',dato:d(1),fra:'07:30',til:'15:30',montor:'m2',status:'plan',notat:''},
+    {id:'j5',kunde:'Marte Solheim',tlf:'470 12 345',adresse:'Hoffsveien 48, Oslo',hva:'Lekkasje under kjøkkenbenk',dato:d(0),fra:'13:00',til:'14:30',montor:'m3',status:'plan',notat:'Vann i skapet under vasken, kunden har satt bøtte. Sjekk avløp og tilkobling til oppvaskmaskin.'},
+    {id:'j6',kunde:'Rema 1000 Røa',tlf:'22 50 00 00',adresse:'Vækerøveien 205, Oslo',hva:'Tett sluk på bakrommet',dato:d(1),fra:'09:00',til:'10:30',montor:'m3',status:'plan',notat:'Spør etter Mona.'},
+    {id:'j7',kunde:'Ingrid Haugen',tlf:'952 33 410',adresse:'Jar terrasse 14, Jar',hva:'Befaring: nytt bad i kjeller',dato:d(1),fra:'12:00',til:'13:00',montor:'m1',status:'plan',notat:'Kunden vil ha pris på komplett bad, ca. 6 kvm. Ta med målebånd og fuktmåler. Sjekk fall til sluk og om det er mulig med gulvvarme.'},
+    {id:'j8',kunde:'Anders Lie',tlf:'951 00 221',adresse:'Bogstadveien 40, Oslo',hva:'Montere WC-ramme og vegghengt toalett',dato:d(2),fra:'08:00',til:'11:00',montor:'m1',status:'plan',notat:'WC-rammen skal monteres 45 cm fra vegg. Høyde avløp 26 cm fra gulv. Kunden har kjøpt Geberit-ramme selv, står i gangen.'},
+    {id:'j9',kunde:'Borettslaget Sollia',tlf:'67 55 10 20',adresse:'Solliveien 3, Bærum',hva:'Montere sluk, vaskerom',dato:d(2),fra:'12:00',til:'14:30',montor:'m3',status:'plan',notat:'Ta med div. bend (45 og 90) og slukforlenger. Høyde jevnt med ferdig gulv, membran legges etterpå.'},
+    {id:'j10',kunde:'Siri og Tom Eriksen',tlf:'413 22 870',adresse:'Bekkestuveien 11, Bekkestua',hva:'Dobbel vannutkaster kjøkken + Waterguard',dato:d(3),fra:'08:00',til:'12:00',montor:'m2',status:'plan',notat:'Kunden ønsker dobbel Waterguard på tilførselen til kjøkkenet, med trådløs sensor til kjøleskapet. Dobbel utkaster til hage. Sjekk stoppekran i kjeller først.'},
+    {id:'j11',kunde:'Frisør Studio B',tlf:'67 12 34 56',adresse:'Bekkestua senter, Bærum',hva:'Ny vask og avløp',dato:d(4),fra:'13:00',til:'16:00',montor:null,status:'plan',notat:'Må gjøres etter stengetid, kunden stenger kl 16 på fredager.'},
+    {id:'j12',kunde:'Lars Pedersen',tlf:'900 45 000',adresse:'Gamle Drammensvei 100, Sandvika',hva:'Dryppende kran bad',dato:d(3),fra:'13:00',til:'14:00',montor:null,status:'plan',notat:'Ringte tirsdag, haster ikke.'},
+    {id:'v1',kunde:'Familien Strand',tlf:'928 11 300',adresse:'Lysakerveien 22, Lysaker',hva:'Ny enebolig: rehab bad og vaskerom',dato:'',fra:'07:30',til:'15:30',montor:null,status:'plan',venter:true,frist:'Innen 2 uker',notat:'Starter med demontering og utplugging av gammelt bad og vaskerom. Kunden flytter inn om 2 uker og vil ha badet først. Rørlegger + lærling hele første dag.'},
+    {id:'v2',kunde:'Sameiet Tåsen Terrasse',tlf:'22 18 00 40',adresse:'Tåsenveien 70, Oslo',hva:'Bytte 6 stoppekraner i kjeller',dato:'',fra:'08:00',til:'14:00',montor:null,status:'plan',venter:true,frist:'Når styret har godkjent',notat:'Vannet må stenges for hele blokka. Varsle beboere 3 dager før.'},
+  ];
+}
+function demoLaerling(){ const m=mandag(idag()); return {[iso(plussDag(m,0))]:'m2',[iso(plussDag(m,1))]:'m2',[iso(plussDag(m,2))]:'m1',[iso(plussDag(m,3))]:'m2'}; }
+let jobber=null, laerling=null;
+try{const r=localStorage.getItem(NOKKEL); if(r){const o=JSON.parse(r); if(Array.isArray(o.jobber)) jobber=o.jobber; if(o.laerling&&typeof o.laerling==='object') laerling=o.laerling;}}catch(e){}
+if(!jobber){jobber=demoJobber(); laerling=demoLaerling();}
+if(!laerling) laerling={};
+jobber.forEach(j=>{ if(j.dato===undefined) j.dato=''; });
+function lagreAlt(){try{localStorage.setItem(NOKKEL,JSON.stringify({jobber,laerling}));}catch(e){}}
+let visVent=false;
+let visning=(window.matchMedia('(max-width:720px)').matches)?'dag':'uke';
+try{const v=localStorage.getItem(NOKKEL+'-vis'); if(v==='dag'||v==='uke') visning=v;}catch(e){}
+let fokus=idag(); // dagen vi ser på (dagvisning) / uka den ligger i
+
+// ---------- kollisjoner ----------
+function kolliderer(j){
+  if(!j.montor||!j.dato) return false;
+  const a=tilMin(j.fra), b=tilMin(j.til);
+  return jobber.some(k=>k!==j && k.montor===j.montor && k.dato===j.dato && tilMin(k.fra)<b && tilMin(k.til)>a);
+}
+
+// ---------- tegning ----------
+const tavle=document.getElementById('tavle');
+const periode=document.getElementById('periode');
+function kortHtml(j,ekstraKlasse){
+  const kl=['kort']; if(!j.montor) kl.push('utildelt'); if(kolliderer(j)) kl.push('kollisjon'); if(ekstraKlasse) kl.push(ekstraKlasse);
+  const kollTekst=kolliderer(j)?' · krasjer med en annen jobb':'';
+  const tid=j.dato?`${j.fra}–${j.til}`:esc(j.frist||'Ingen dato ennå');
+  return `<div class="${kl.join(' ')}" data-id="${j.id}" data-status="${j.status}" role="button" tabindex="0" aria-label="${esc(j.kunde)}, ${tid}${kollTekst}">
+    <div class="tid">${tid}${kolliderer(j)?' ⚠':''}</div>
+    <div class="kunde">${esc(j.kunde)}</div>
+    <div class="adr">${esc(j.adresse||'')}</div>
+    <div class="hva">${esc(j.hva)}</div></div>`;
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const sorter=(a,b)=>a.dato.localeCompare(b.dato)||tilMin(a.fra)-tilMin(b.fra);
+
+const laerlingBadge=(dato,montorId)=>(montorId&&laerling[dato]===montorId)?`<span class="laerling-badge" title="${esc(LAERLING.navn)} er med denne dagen">+ ${esc(LAERLING.navn)}</span>`:'';
+function ventStripe(){
+  const v=jobber.filter(j=>!j.dato);
+  document.getElementById('ventKnapp').textContent=`På vent (${v.length})`;
+  document.getElementById('ventKnapp').setAttribute('aria-pressed',visVent);
+  if(!visVent) return '';
+  return `<section class="vent" aria-label="Jobber på vent"><div class="vent-hode"><b>På vent</b><span>Jobber uten dato. Dra dem inn i kalenderen når de skal gjøres, eller dra et kort hit for å sette det på vent.</span></div>
+    <div class="vent-liste" data-drop data-vent="1">${v.map(j=>kortHtml(j,'venter')).join('')||'<div class="tomt">Ingen jobber på vent.</div>'}</div></section>`;
+}
+function tegn(){
+  document.getElementById('visDag').setAttribute('aria-pressed',visning==='dag');
+  document.getElementById('visUke').setAttribute('aria-pressed',visning==='uke');
+  if(visning==='uke') tegnUke(); else tegnDag();
+}
+function tegnUke(){
+  const m=mandag(fokus); const dager=[0,1,2,3,4,5].map(n=>plussDag(m,n));
+  periode.textContent=`Uke ${ukenr(m)} · ${m.getDate()}.–${dager[5].getDate()}. ${MND[dager[5].getMonth()]}`;
+  const t=iso(idag());
+  let h='<div class="rute">'+ventStripe()+'<div class="uke-grid"><div class="hode"></div>';
+  for(const d of dager){const i=iso(d); h+=`<div class="hode ${i===t?'idag':''}">${DAGER[d.getDay()]}<b>${d.getDate()}. ${MND[d.getMonth()]}</b></div>`;}
+  const rader=[{id:null,navn:'Ikke tildelt',rolle:'Dra til en montør',farge:'var(--fri)'},...MONTORER];
+  for(const r of rader){
+    h+=`<div class="rad-navn"><span class="prikk" style="background:${r.farge}"></span><span>${esc(r.navn)}<small>${esc(r.rolle)}</small></span></div>`;
+    for(const d of dager){
+      const i=iso(d); const js=jobber.filter(j=>j.dato===i && (j.montor||null)===r.id).sort(sorter);
+      h+=`<div class="celle ${r.id?'':'fri'}" data-drop data-dato="${i}" data-montor="${r.id||''}">${laerlingBadge(i,r.id)}${js.map(j=>kortHtml(j)).join('')}</div>`;
+    }
+  }
+  h+='</div>';
+  // mobil-liste
+  h+='<div class="liste">';
+  for(const d of dager){
+    const i=iso(d); const dagens=jobber.filter(j=>j.dato===i);
+    h+=`<div class="dagblokk"><h3><b>${DAGER_LANG[d.getDay()]} ${d.getDate()}. ${MND[d.getMonth()]}</b>${i===t?'i dag · ':''}${dagens.length} jobber</h3>`;
+    for(const r of rader){
+      const js=dagens.filter(j=>(j.montor||null)===r.id).sort(sorter); if(!js.length && r.id) continue;
+      h+=`<div class="mont"><div class="rad-navn"><span class="prikk" style="background:${r.farge}"></span><span>${esc(r.navn)}</span></div><div class="celle ${r.id?'':'fri'}" data-drop data-dato="${i}" data-montor="${r.id||''}">${laerlingBadge(i,r.id)}${js.map(j=>kortHtml(j)).join('')||'<div class="tomt">Ingen jobber i kø</div>'}</div></div>`;
+    }
+    h+='</div>';
+  }
+  h+='</div></div>';
+  tavle.innerHTML=h;
+}
+function tegnDag(){
+  const d=fokus; const i=iso(d); const t=iso(idag());
+  periode.textContent=`Uke ${ukenr(d)} · ${DAGER_LANG[d.getDay()]} ${d.getDate()}. ${MND[d.getMonth()]}${i===t?' · i dag':''}`;
+  const timer=SLUTT_T-START_T;
+  let h=ventStripe()+`<div class="dag-wrap" style="--timer:${timer};--time-h:${TIME_H}px"><div class="tidsakse">`;
+  for(let k=START_T;k<SLUTT_T;k++) h+=`<div>${pad(k)}:00</div>`;
+  h+='</div><div class="dag-grid">';
+  const koller=[{id:null,navn:'Ikke tildelt',farge:'var(--fri)'},...MONTORER];
+  const na=new Date(); const naMin=na.getHours()*60+na.getMinutes();
+  for(const r of koller){
+    const js=jobber.filter(j=>j.dato===i && (j.montor||null)===r.id).sort(sorter);
+    const sumMin=js.reduce((s,j)=>s+Math.max(0,tilMin(j.til)-tilMin(j.fra)),0);
+    h+=`<div class="kol"><div class="hode"><span class="prikk" style="background:${r.farge};margin-top:0"></span>${esc(r.navn)}${laerlingBadge(i,r.id)}<small>${js.length} jobber · ${(sumMin/60).toFixed(1).replace('.',',')} t</small></div>
+      <div class="spor ${r.id?'':'fri'}" data-drop data-dato="${i}" data-montor="${r.id||''}">`;
+    if(i===t && naMin>START_T*60 && naMin<SLUTT_T*60) h+=`<div class="naa" style="top:${(naMin-START_T*60)/60*TIME_H}px"></div>`;
+    for(const j of js){
+      const top=(Math.max(tilMin(j.fra),START_T*60)-START_T*60)/60*TIME_H;
+      const hoyde=Math.max(30,(Math.min(tilMin(j.til),SLUTT_T*60)-Math.max(tilMin(j.fra),START_T*60))/60*TIME_H-4);
+      h+=kortHtml(j).replace('class="kort',`style="top:${top+2}px;height:${hoyde}px" class="kort`);
+    }
+    h+='</div></div>';
+  }
+  h+='</div></div>';
+  tavle.innerHTML=h;
+}
+
+// ---------- navigasjon ----------
+document.getElementById('visDag').onclick=()=>{visning='dag';try{localStorage.setItem(NOKKEL+'-vis','dag')}catch(e){};tegn();};
+document.getElementById('visUke').onclick=()=>{visning='uke';try{localStorage.setItem(NOKKEL+'-vis','uke')}catch(e){};tegn();};
+document.getElementById('forrige').onclick=()=>{fokus=plussDag(fokus,visning==='uke'?-7:-1);tegn();};
+document.getElementById('neste').onclick=()=>{fokus=plussDag(fokus,visning==='uke'?7:1);tegn();};
+document.getElementById('idag').onclick=()=>{fokus=idag();tegn();};
+document.getElementById('nullstill').onclick=()=>{jobber=demoJobber();laerling=demoLaerling();lagreAlt();fokus=idag();tegn();visHint('Demo-jobbene er lagt inn på nytt.');};
+document.getElementById('ventKnapp').onclick=()=>{visVent=!visVent;tegn();};
+
+// ---------- dra og slipp (pointer events: virker med fingeren) ----------
+let drag=null;
+function startDrag(e,el,type){
+  const r=el.getBoundingClientRect();
+  drag={type,id:el.dataset.id,kort:el,startX:e.clientX,startY:e.clientY,offX:e.clientX-r.left,offY:e.clientY-r.top,aktiv:false,spok:null,mal:null,pid:e.pointerId};
+  el.setPointerCapture(e.pointerId);
+}
+tavle.addEventListener('pointerdown',e=>{
+  const kort=e.target.closest('.kort'); if(!kort||e.button>0) return;
+  startDrag(e,kort,'kort');
+});
+const chip=document.getElementById('laerlingChip');
+chip.addEventListener('pointerdown',e=>{ if(e.button>0) return; startDrag(e,chip,'laerling'); });
+chip.addEventListener('pointermove',e=>tavle.dispatchEvent(new PointerEvent('pointermove',e)));
+chip.addEventListener('pointerup',e=>sluttDrag(e));
+chip.addEventListener('pointercancel',e=>{ if(drag){ if(drag.spok) drag.spok.remove(); drag.kort.classList.remove('drar'); if(drag.mal) drag.mal.classList.remove('mal'); drag=null; } });
+chip.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); visHint('Dra brikken med musa eller fingeren til dagen og montøren Emil skal være med.'); } });
+tavle.addEventListener('pointermove',e=>{
+  if(!drag||e.pointerId!==drag.pid) return;
+  const dx=e.clientX-drag.startX, dy=e.clientY-drag.startY;
+  if(!drag.aktiv){ if(Math.hypot(dx,dy)<7) return; drag.aktiv=true; drag.spok=drag.kort.cloneNode(true); drag.spok.classList.add('spok'); drag.spok.classList.remove('drar'); document.body.appendChild(drag.spok); drag.kort.classList.add('drar'); }
+  drag.spok.style.left=(e.clientX-drag.offX)+'px'; drag.spok.style.top=(e.clientY-drag.offY)+'px';
+  const under=document.elementFromPoint(e.clientX,e.clientY); const mal=under?under.closest('[data-drop]'):null;
+  if(mal!==drag.mal){ if(drag.mal) drag.mal.classList.remove('mal'); drag.mal=mal; if(mal) mal.classList.add('mal'); }
+  // autoscroll i kanten av tavla
+  const tb=tavle.getBoundingClientRect(); if(e.clientY>tb.bottom-40) tavle.scrollTop+=8; else if(e.clientY<tb.top+40) tavle.scrollTop-=8;
+});
+function sluttDrag(e){
+  if(!drag||e.pointerId!==drag.pid) return;
+  const d=drag; drag=null;
+  if(d.spok) d.spok.remove(); d.kort.classList.remove('drar'); if(d.mal) d.mal.classList.remove('mal');
+  if(!d.aktiv){ if(d.type==='kort') apneDetalj(d.id); return; }
+  if(!d.mal) return;
+  if(d.type==='laerling'){
+    if(d.mal.dataset.vent!==undefined) return;
+    const dato=d.mal.dataset.dato, mont=d.mal.dataset.montor||null;
+    if(mont){ laerling[dato]=mont; const m=MONTORER.find(x=>x.id===mont); visHint(`${LAERLING.navn} er med ${m.navn} ${DAGER[fraIso(dato).getDay()]} ${fraIso(dato).getDate()}.`); }
+    else { delete laerling[dato]; visHint(`${LAERLING.navn} er tatt av ${DAGER[fraIso(dato).getDay()]}.`); }
+    lagreAlt(); tegn(); return;
+  }
+  const j=jobber.find(x=>x.id===d.id); if(!j) return;
+  if(d.mal.dataset.vent!==undefined){ j.dato=''; j.montor=null; j.venter=true; if(!j.frist) j.frist='Ingen dato ennå'; lagreAlt(); tegn(); visHint(`${j.kunde} er satt på vent.`); return; }
+  const nyMontor=d.mal.dataset.montor||null; const nyDato=d.mal.dataset.dato;
+  const varFraVent=!j.dato; j.venter=false;
+  j.montor=nyMontor; j.dato=nyDato;
+  if(varFraVent && !d.mal.classList.contains('spor')){ j.fra=j.fra||'08:00'; j.til=j.til||'12:00'; }
+  if(d.mal.classList.contains('spor')){ // dagvisning: ny starttid etter hvor kortet slippes, snapper til 30 min
+    const r=d.mal.getBoundingClientRect(); const y=e.clientY-d.offY-r.top; let start=START_T*60+Math.round((y/TIME_H*60)/30)*30;
+    const varighet=tilMin(j.til)-tilMin(j.fra); start=Math.max(START_T*60,Math.min(start,SLUTT_T*60-varighet));
+    j.fra=fraMin(start); j.til=fraMin(start+varighet);
+  }
+  lagreAlt(); tegn();
+  const m=MONTORER.find(x=>x.id===nyMontor);
+  visHint(m?`${j.kunde} ligger nå hos ${m.navn}, ${DAGER[fraIso(nyDato).getDay()]} ${j.fra}.`:`${j.kunde} ligger i «Ikke tildelt».`);
+}
+tavle.addEventListener('pointerup',sluttDrag);
+tavle.addEventListener('pointercancel',e=>{ if(drag&&e.pointerId===drag.pid){ if(drag.spok) drag.spok.remove(); drag.kort.classList.remove('drar'); if(drag.mal) drag.mal.classList.remove('mal'); drag=null; tegn(); } });
+tavle.addEventListener('keydown',e=>{ const k=e.target.closest('.kort'); if(k&&(e.key==='Enter'||e.key===' ')){e.preventDefault();apneDetalj(k.dataset.id);} });
+
+let hintTimer; function visHint(t){const h=document.getElementById('hint');h.textContent=t;h.hidden=false;clearTimeout(hintTimer);hintTimer=setTimeout(()=>{h.hidden=true;},3500);}
+setTimeout(()=>{document.getElementById('hint').hidden=true;},7000);
+
+// ---------- kortpanel ----------
+const detaljDlg=document.getElementById('detaljDlg'); let apenId=null;
+function apneDetalj(id){
+  const j=jobber.find(x=>x.id===id); if(!j) return; apenId=id;
+  const m=MONTORER.find(x=>x.id===j.montor); const d=j.dato?fraIso(j.dato):null;
+  document.getElementById('detaljTittel').textContent=j.kunde;
+  const kart=j.adresse?`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(j.adresse)}`:'';
+  const tlfRen=(j.tlf||'').replace(/\s+/g,'');
+  const naar=d?`${DAGER_LANG[d.getDay()]} ${d.getDate()}. ${MND[d.getMonth()]}, ${j.fra}–${j.til}${kolliderer(j)?' <span style="color:var(--feil)">⚠ krasjer med en annen jobb</span>':''}`:`<i>På vent</i> · ${esc(j.frist||'ingen dato ennå')}`;
+  const med=(d&&j.montor&&laerling[j.dato]===j.montor)?` + ${esc(LAERLING.navn)} (lærling)`:'';
+  document.getElementById('detaljListe').innerHTML=
+    `<dt>Når</dt><dd>${naar}</dd>
+     <dt>Montør</dt><dd>${m?esc(m.navn)+med:'<i>Ikke tildelt</i>'}</dd>
+     <dt>Jobb</dt><dd>${esc(j.hva)}</dd>
+     <dt>Telefon</dt><dd>${j.tlf?`<a href="tel:${esc(tlfRen)}">${esc(j.tlf)}</a><button type="button" class="knapp kopier" data-kopier="${esc(j.tlf)}">Kopier</button>`:'<i>Mangler</i>'}</dd>
+     <dt>Adresse</dt><dd>${j.adresse?`${esc(j.adresse)} · <a href="${kart}" target="_blank" rel="noopener">Åpne i kart</a>`:'<i>Mangler</i>'}</dd>
+     ${j.notat?`<dt>Notat</dt><dd>${esc(j.notat)}</dd>`:''}
+     ${j.bilde?`<dt>Lapp</dt><dd><img src="${j.bilde}" alt="Bilde av lappen" style="max-height:160px;border-radius:8px"></dd>`:''}`;
+  document.querySelectorAll('#statusValg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.s===j.status));
+  document.getElementById('fjernKnapp').hidden=!j.montor;
+  document.getElementById('slettBekreft').hidden=true;
+  detaljDlg.showModal();
+}
+document.getElementById('statusValg').addEventListener('click',e=>{const b=e.target.closest('button[data-s]'); if(!b) return; const j=jobber.find(x=>x.id===apenId); if(!j) return; j.status=b.dataset.s; lagreAlt(); tegn(); apneDetalj(apenId);});
+document.getElementById('detaljListe').addEventListener('click',e=>{const b=e.target.closest('[data-kopier]'); if(!b) return; const t=b.dataset.kopier; (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='Kopiert';setTimeout(()=>b.textContent='Kopier',1500);}).catch(()=>{const r=document.createRange();r.selectNodeContents(b.previousElementSibling);const s=getSelection();s.removeAllRanges();s.addRange(r);});});
+document.getElementById('fjernKnapp').onclick=()=>{const j=jobber.find(x=>x.id===apenId); if(j){j.montor=null;lagreAlt();tegn();detaljDlg.close();visHint(`${j.kunde} ligger i «Ikke tildelt».`);}};
+document.getElementById('slettKnapp').onclick=()=>{document.getElementById('slettBekreft').hidden=false;};
+document.getElementById('slettNei').onclick=()=>{document.getElementById('slettBekreft').hidden=true;};
+document.getElementById('slettJa').onclick=()=>{jobber=jobber.filter(x=>x.id!==apenId);lagreAlt();tegn();detaljDlg.close();visHint('Jobben er slettet.');};
+document.getElementById('redigerKnapp').onclick=()=>{detaljDlg.close();apneSkjema(apenId);};
+
+// ---------- skjema ----------
+const skjemaDlg=document.getElementById('skjemaDlg'), skjema=document.getElementById('skjema');
+const fMontor=document.getElementById('fMontor');
+fMontor.innerHTML='<option value="">Ikke tildelt ennå</option>'+MONTORER.map(m=>`<option value="${m.id}">${esc(m.navn)}</option>`).join('');
+let redigerId=null, bildeData=null;
+function velgFane(n){document.querySelectorAll('#faner [role=tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.fane===n));document.getElementById('faneLim').hidden=n!=='lim';document.getElementById('faneBilde').hidden=n!=='bilde';}
+document.getElementById('faner').addEventListener('click',e=>{const b=e.target.closest('[data-fane]'); if(b) velgFane(b.dataset.fane);});
+function apneSkjema(id,forvalg){
+  redigerId=id||null; bildeData=null; document.getElementById('bildeVis').innerHTML=''; document.getElementById('funnet').hidden=true; document.getElementById('skjemaFeil').hidden=true; document.getElementById('limTekst').value='';
+  skjema.reset(); velgFane('skriv');
+  const j=id?jobber.find(x=>x.id===id):null;
+  document.getElementById('skjemaTittel').textContent=j?'Endre jobb':'Ny jobb';
+  document.getElementById('lagre').textContent=j?'Lagre':'Legg inn';
+  const v=j||Object.assign({kunde:'',tlf:'',adresse:'',hva:'',dato:iso(visning==='dag'?fokus:idag()),fra:'08:00',til:'10:00',montor:'',status:'plan',notat:''},forvalg||{});
+  for(const k of ['kunde','tlf','adresse','hva','dato','fra','til','notat','frist']) skjema.elements[k].value=v[k]||'';
+  skjema.elements.montor.value=v.montor||''; skjema.elements.status.value=v.status||'plan';
+  skjema.elements.venter.checked=!!(j&&!j.dato); visVenterFelt();
+  if(j&&j.bilde){bildeData=j.bilde;document.getElementById('bildeVis').innerHTML=`<img src="${j.bilde}" alt="Lappen">`;}
+  skjemaDlg.showModal(); setTimeout(()=>skjema.elements.kunde.focus(),50);
+}
+function visVenterFelt(){const v=skjema.elements.venter.checked;document.getElementById('fristFelt').hidden=!v;document.getElementById('datoRad').hidden=v;}
+document.getElementById('fVenter').onchange=visVenterFelt;
+document.getElementById('plussKnapp').onclick=()=>apneSkjema(null);
+document.querySelectorAll('[data-lukk]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+document.getElementById('bildeFil').onchange=e=>{const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{bildeData=r.result;document.getElementById('bildeVis').innerHTML=`<img src="${r.result}" alt="Lappen">`;}; r.readAsDataURL(f);};
+skjema.addEventListener('submit',e=>{
+  e.preventDefault(); const f=skjema.elements; const feil=document.getElementById('skjemaFeil');
+  const venter=f.venter.checked;
+  if(!f.kunde.value.trim()||!f.hva.value.trim()||(!venter&&!f.dato.value)){feil.textContent=venter?'Kunde og hva som skal gjøres må være med.':'Kunde, hva som skal gjøres og dato må være med.';feil.hidden=false;return;}
+  if(!venter&&tilMin(f.til.value)<=tilMin(f.fra.value)){feil.textContent='Sluttid må være etter starttid.';feil.hidden=false;return;}
+  const data={kunde:f.kunde.value.trim(),tlf:f.tlf.value.trim(),adresse:f.adresse.value.trim(),hva:f.hva.value.trim(),dato:venter?'':f.dato.value,fra:f.fra.value||'08:00',til:f.til.value||'12:00',montor:venter?null:(f.montor.value||null),status:f.status.value,notat:f.notat.value.trim(),venter,frist:venter?(f.frist.value.trim()||'Ingen dato ennå'):''};
+  if(bildeData) data.bilde=bildeData;
+  if(redigerId){Object.assign(jobber.find(x=>x.id===redigerId),data);} else {data.id='j'+Date.now().toString(36);jobber.push(data);}
+  if(venter) visVent=true; else fokus=fraIso(data.dato);
+  lagreAlt(); skjemaDlg.close(); tegn();
+  visHint(venter?'Jobben ligger på vent. Dra den inn i kalenderen når dere vet dagen.':data.montor?`Jobben ligger hos ${MONTORER.find(m=>m.id===data.montor).navn}.`:'Jobben ligger i «Ikke tildelt». Dra den til en montør.');
+});
+
+// ---------- lim inn tekst: hent ut opplysninger ----------
+function hentUt(t){
+  const ut={}; const funn=[];
+  const tlf=t.match(/(?:\+47\s?)?(?:\d{2}\s?\d{2}\s?\d{2}\s?\d{2}|\d{3}\s?\d{2}\s?\d{3}|\d{8})(?!\d)/);
+  if(tlf){ut.tlf=tlf[0].trim();funn.push('telefon');}
+  const adr=t.match(/([A-ZÆØÅ][\wæøåÆØÅ'.-]*(?:\s[\wæøåÆØÅ'.-]+){0,3}?\s?(?:vei|veien|vegen|gate|gata|gaten|allé|alle|plass|plassen|terrasse|svingen|stien|bakken|lia|tunet|kroken|haugen|toppen|senter|torg)\s\d{1,4}\s?[A-Za-z]?(?:,\s?\d{4}\s?[A-ZÆØÅ][\wæøå]+)?(?:,\s?[A-ZÆØÅ][\wæøå]+)?)/);
+  if(adr){ut.adresse=adr[1].replace(/[.,]$/,'').trim();funn.push('adresse');}
+  const lav=t.toLowerCase(); const base=idag();
+  const dag=DAGER_LANG.findIndex(n=>lav.includes(n));
+  if(/i\s?morgen/.test(lav)){ut.dato=iso(plussDag(base,1));funn.push('dag');}
+  else if(/i\s?dag/.test(lav)){ut.dato=iso(base);funn.push('dag');}
+  else if(dag>=0){let diff=(dag-base.getDay()+7)%7; if(diff===0) diff=7; ut.dato=iso(plussDag(base,diff));funn.push('dag');}
+  else { const dm=t.match(/(\d{1,2})\.\s?(\d{1,2})\.?(?:\s?(\d{4}))?/); if(dm){const y=dm[3]?Number(dm[3]):base.getFullYear();const d=new Date(y,Number(dm[2])-1,Number(dm[1]));if(!isNaN(d)){ut.dato=iso(d);funn.push('dato');}} }
+  const kl=t.match(/(?:kl\.?\s?|klokka\s?|klokken\s?)?(\d{1,2})(?:[:.](\d{2}))?\s?(?:-|–|til)\s?(\d{1,2})(?:[:.](\d{2}))?/i);
+  const kl1=t.match(/(?:kl\.?\s?|klokka\s?|klokken\s?)(\d{1,2})(?:[:.](\d{2}))?/i)||t.match(/\b([01]?\d|2[0-3])[:.]([0-5]\d)\b/);
+  if(kl && Number(kl[1])<24 && Number(kl[3])<24 && Number(kl[1])<Number(kl[3])){ut.fra=pad(kl[1])+':'+(kl[2]||'00');ut.til=pad(kl[3])+':'+(kl[4]||'00');funn.push('klokkeslett');}
+  else if(kl1 && Number(kl1[1])<24){const s=Number(kl1[1])*60+Number(kl1[2]||0);ut.fra=fraMin(s);ut.til=fraMin(Math.min(s+90,23*60+30));funn.push('klokkeslett');}
+  const navn=t.match(/(?:mvh|hilsen|vennlig hilsen|med vennlig hilsen|hei fra)[,.!]?\s*([A-ZÆØÅ][\wæøå]+(?:\s[A-ZÆØÅ][\wæøå]+)?)/i);
+  if(navn){ut.kunde=navn[1].trim();funn.push('navn');}
+  const forsteSetning=t.split(/[.!?\n]/).map(s=>s.trim()).find(s=>/(bytte|skifte|montere|reparere|lekk|tett|dryp|installere|koble|sjekke|befaring|bad|varmtvann|bereder|kran|sluk|avløp|toalett|dusj|vask|rør)/i.test(s));
+  if(forsteSetning){ut.hva=forsteSetning.replace(/^(hei[!,.]?\s*|kan dere\s*|kunne dere\s*|vi trenger\s*|jeg trenger\s*)/i,'').replace(/^\w/,c=>c.toUpperCase()).slice(0,80);funn.push('hva');}
+  return {ut,funn};
+}
+document.getElementById('hentUt').onclick=()=>{
+  const t=document.getElementById('limTekst').value; if(!t.trim()) return;
+  const {ut,funn}=hentUt(t); const f=skjema.elements;
+  for(const k of Object.keys(ut)) if(f[k]) f[k].value=ut[k];
+  if(!f.notat.value) f.notat.value=t.trim().slice(0,300);
+  const boks=document.getElementById('funnet');
+  boks.innerHTML=funn.length?`Fant <b>${funn.join(', ')}</b>. Se over feltene under og rett det som ble feil.`:'Fant ingen sikre opplysninger. Skriv inn selv, teksten ligger i notatet.';
+  boks.hidden=false; velgFane('skriv');
+};
+
+// ---------- ønsker ----------
+const onskeDlg=document.getElementById('onskeDlg');
+document.getElementById('onskeApne').onclick=()=>{document.getElementById('onskeFeil').hidden=true;onskeDlg.showModal();setTimeout(()=>document.getElementById('oTekst').focus(),50);};
+function onskeTekst(){const t=document.getElementById('oTekst').value.trim(),n=document.getElementById('oNavn').value.trim(),k=document.getElementById('oTlf').value.trim();return `Ønske til arbeidskalenderen:\n\n${t}\n\n${n?'Fra: '+n+'\n':''}${k?'Kontakt: '+k+'\n':''}(sendt fra demoen på hifivestudio.no/kalender)`;}
+document.getElementById('onskeSkjema').addEventListener('submit',e=>{
+  e.preventDefault(); const feil=document.getElementById('onskeFeil');
+  if(!document.getElementById('oTekst').value.trim()){feil.textContent='Skriv ønsket først.';feil.hidden=false;return;}
+  const url='mailto:tobias@hifivestudio.no?subject='+encodeURIComponent('Ønske til arbeidskalenderen')+'&body='+encodeURIComponent(onskeTekst());
+  const a=document.createElement('a');a.href=url;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
+  feil.textContent='E-postprogrammet ditt åpner seg med teksten klar. Åpner det seg ikke: trykk «Kopier teksten» og send den til tobias@hifivestudio.no.';feil.hidden=false;
+});
+document.getElementById('onskeKopier').onclick=e=>{const b=e.currentTarget;const t=onskeTekst();(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='Kopiert';setTimeout(()=>b.textContent='Kopier teksten',1500);}).catch(()=>{const ta=document.getElementById('oTekst');ta.focus();ta.select();});};
+try{ if(localStorage.getItem(NOKKEL+'-intro')==='lukket') document.getElementById('intro').open=false; }catch(e){}
+document.getElementById('intro').addEventListener('toggle',e=>{try{localStorage.setItem(NOKKEL+'-intro',e.target.open?'apen':'lukket');}catch(x){}});
+
+// ---------- start ----------
+tegn();
+})();
+</script>
+
+</body>
+</html>
