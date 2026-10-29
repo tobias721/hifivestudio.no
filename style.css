@@ -35,7 +35,7 @@ img{max-width:100%;height:auto;display:block}
   padding:8px 8px 8px 16px;border:1px solid var(--line);border-radius:14px;
   background:rgba(255,255,255,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:500;font-size:17px;white-space:nowrap}
-.logo img{width:22px;height:26px;opacity:.9}   /* N5: svart på lys side (var invert for mørk side) */
+.logo-hand{width:22px;height:26px;flex:none;opacity:.9}   /* N5 29.10: innebygd svg i stedet for bilde */
 .nav-links{display:flex;align-items:center;gap:4px;list-style:none;margin:0;padding:0}
 .nav-links a{display:block;padding:8px 12px;border-radius:9px;text-decoration:none;font-size:14px;font-weight:500;
   text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
@@ -70,8 +70,6 @@ section{padding:88px 0}
 .hero .lead{margin:26px 0 34px}
 .hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:22px}
 .hero-grid{position:relative;display:grid;grid-template-columns:1.25fr .85fr;gap:56px;align-items:center}
-.hero-hand{position:absolute;left:-7%;top:-4%;height:92%;width:auto;color:var(--blue);opacity:.25;pointer-events:none}
-.hero-hand path{vector-effect:non-scaling-stroke}
 .sec-head{margin-bottom:40px;max-width:720px}
 .sec-head p{margin-top:14px}
 
@@ -209,7 +207,6 @@ footer{border-top:1px solid var(--line);margin-top:64px;padding:56px 0 40px;font
   .nav-links .btn{margin-top:6px}
   section{padding:60px 0}
   .hero{padding:64px 0 52px}
-  .hero-hand{display:none}   /* N4: aldri over tekst på mobil */
   .health{grid-template-columns:1fr}
   .report{padding:20px}
   .bar{grid-template-columns:104px 1fr 30px}
@@ -322,7 +319,6 @@ section.alt{background:var(--bg-alt)}
 .report .btn.ghost{box-shadow:0 0 0 1px var(--line) inset}
 .card,.hcard,.price,.pkg{background:#fff;border-color:var(--line)}
 .btn.ghost{color:var(--ink);box-shadow:0 0 0 1px #c9ced6 inset}
-.hero-hand{opacity:.16}
 /* tallstripe */
 .stripe{padding:28px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .stripe-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}

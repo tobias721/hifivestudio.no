@@ -19,8 +19,11 @@ MAIL = mailto()
 # N5: fontene ligger i /fonts/ (ingen forespørsel til Google Fonts fra besøkende). @font-face står øverst i style.css.
 FONT = '<link rel="preload" href="/fonts/dm-sans.woff2" as="font" type="font/woff2" crossorigin><link rel="preload" href="/fonts/fraunces-400.woff2" as="font" type="font/woff2" crossorigin>'
 
-# Hånd-logoen som tynn linjetegning bak heroen (samme sti som img/logo-hand.svg)
-HAND = '<svg class="hero-hand" aria-hidden="true" viewBox="100 90 265 320" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M185,250 L185,130 L225,130 L225,105 L265,105 L265,130 L305,130 L305,185 L345,185 L345,330 L325,360 L325,392 L225,392 L225,380 C225,366 211.3,351.9 200,335.4 L121,223 C113,211 126,201 142,208 L185,250 Z"/><path d="M225,130 L225,220 L265,220 L265,130"/><path d="M305,130 L305,325"/><path d="M225,325 L225,255 L265,255 L265,325"/></svg>'
+# N5 29.10: logoen ligger inne i siden (ikke egen fil) – kan ikke vise «bilde mangler», arver tekstfargen
+LOGO = ('<svg class="logo-hand" aria-hidden="true" width="22" height="26" viewBox="100 90 265 320" fill="none" stroke="currentColor" stroke-width="18">'
+        '<path d="M185,250 L185,130 L225,130 L225,105 L265,105 L265,130 L305,130 L305,185 L345,185 L345,330 L325,360 L325,392 L225,392 L225,380 C225,366 211.3,351.9 200,335.4 L121,223 C113,211 126,201 142,208 L185,250 Z"/>'
+        '<path d="M225,130 L225,220 L265,220 L265,130"/><path d="M305,130 L305,325"/><path d="M225,325 L225,255 L265,255 L265,325"/></svg>')
+
 
 # Ekte bilde av Tobias: legg img/tobias.webp (eller .jpg), 1200 px bredt. Mangler fila, bygges seksjonen uten bilde.
 PHOTO = next((p for p in ("tobias.webp", "tobias.jpg") if (OUT / "img" / p).exists()), None)
@@ -63,7 +66,7 @@ def page(slug, title, desc, body):
 </head>
 <body>
 <nav class="nav" id="nav">
-  <a class="logo" href="/"><img src="/img/logo-hand.svg" alt="" width="22" height="26">HiFive Studio</a>
+  <a class="logo" href="/">{LOGO}HiFive Studio</a>
   <button class="menu-btn" aria-expanded="false" aria-controls="links" onclick="var n=document.getElementById('nav');n.classList.toggle('open');this.setAttribute('aria-expanded',n.classList.contains('open'))">Meny</button>
   <ul class="nav-links" id="links">
     <li><a href="/tjenester"{' aria-current="page"' if slug == "tjenester" else ""}>Tjenester</a></li>
@@ -81,7 +84,7 @@ def page(slug, title, desc, body):
   <div class="wrap">
     <div class="foot">
       <div>
-        <a class="logo" href="/"><img src="/img/logo-hand.svg" alt="" width="22" height="26">HiFive Studio</a>
+        <a class="logo" href="/">{LOGO}HiFive Studio</a>
         <p style="margin-top:14px">Vi gjør håndverksbedrifter synlige der kundene leter: Google-profil, annonser og sosiale medier. Satt opp én gang, driftet av oss.</p>
       </div>
       <div>
@@ -324,7 +327,7 @@ def faq_items(items):
 
 # ---------- Forside ----------
 home = f"""
-<section class="hero">{HAND}<div class="wrap hero-grid">
+<section class="hero"><div class="wrap hero-grid">
   <div>
     <div class="eyebrow">Gratis gjennomgang</div>
     <h1 style="margin-top:18px">Flere rørleggerjobber fra Google.</h1>
