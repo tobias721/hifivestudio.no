@@ -163,6 +163,9 @@ MER = {
         ["Hva som er brukt", "Hvor mange som tok kontakt", "Hva hver henvendelse kostet"],
         "Du får rapporten hver måned i Kundebooking og hver uke i Eksklusiv. Tall du kan ta en beslutning på, ikke klikk og visninger.",
         "Inngår i Kundebooking (5.900 kr/mnd) og oppover.", "kundebooking"),
+    # N6 29.10: to piloter, tekst ordrett fra Til-Code N6 (Tobias)
+    "AI-assistent for tilbud": ("tilbud", ['Lager tilbudsutkastet ut fra tilbudene dere har sendt før', 'Bruker prislista dere allerede har fra grossisten', 'Dere ser over, retter og sender'], 'Dere sender oss 10–20 tidligere tilbud og prislista dere bruker. Vi setter opp assistenten på det. Du skriver hva jobben skal inneholde, og får et ferdig utkast du retter og sender til kunden.', 'Pilot: 9.990 kr i oppsett og 1.990 kr/mnd. De første firmaene er med og former den. Ingen binding.', "tilbudsassistent"),
+    "Arbeidskalender": ("kalender", ['Alle jobber på én tavle: kunde, adresse og avtale', 'Dra jobben over på riktig montør', 'Legg inn fra mobilen, med bilde av lappen eller teksten fra e-posten'], 'Vi setter opp tavla med montørene deres og legger inn jobbene som ligger i dag. Dere bruker den fra mobil og PC. Vi bygger den sammen med de første firmaene, så den blir sånn dere faktisk jobber.', 'Pilot: pris etter avtale. Ingen binding.', "arbeidskalender"),
 }
 # H1–H5: (hvorfor dette teller, hva vi gjør med det, dette kan du gjøre selv i dag)
 MER_H = {
@@ -232,6 +235,9 @@ TJENESTER4 = [
     ("Rapport i kroner", ["Hva som er brukt", "Hvor mange som tok kontakt", "Hva hver henvendelse kostet", "Ingen klikk og visninger"],
      "Du får rapporten hver måned i Kundebooking og hver uke i Eksklusiv. Tall du kan ta en beslutning på.",
      "Inngår i Kundebooking (5.900 kr/mnd) og oppover.", "kundebooking", "rapport"),
+    # N6 29.10: piloter
+    ("AI-assistent for tilbud", ['Lager tilbudsutkastet ut fra tilbudene dere har sendt før', 'Bruker prislista dere allerede har fra grossisten', 'Dere ser over, retter og sender', 'Alle tilbud samlet på ett sted'], 'Dere sender oss 10–20 tidligere tilbud og prislista dere bruker. Vi setter opp assistenten på det. Du skriver hva jobben skal inneholde, og får et ferdig utkast du retter og sender til kunden.', 'Pilot: 9.990 kr i oppsett og 1.990 kr/mnd. De første firmaene er med og former den. Ingen binding.', "tilbudsassistent", "tilbud"),
+    ("Arbeidskalender", ['Alle jobber på én tavle: kunde, adresse og avtale', 'Dra jobben over på riktig montør', 'Legg inn fra mobilen, med bilde av lappen eller teksten fra e-posten', 'Alle ser det samme, også ute på jobb'], 'Vi setter opp tavla med montørene deres og legger inn jobbene som ligger i dag. Dere bruker den fra mobil og PC. Vi bygger den sammen med de første firmaene, så den blir sånn dere faktisk jobber.', 'Pilot: pris etter avtale. Ingen binding.', "arbeidskalender", "kalender"),
 ]
 JOBBTYPER = [
     ("Bad og våtrom", "Store jobber, lang beslutning", ["Folk leter i ukevis før de ringer", "Bilder av egne bad avgjør mye", "Omtaler som nevner bad veier tungt", "Annonsene må stå hele perioden, ikke én uke"]),
@@ -408,6 +414,8 @@ TJ = [
     ("Varsel under 30 sekunder", "Når noen fyller ut skjemaet, får du SMS og e-post med en gang: navn, telefon, adresse og hva det gjelder. Du ringer tilbake mens de fortsatt sitter med telefonen i hånda, før konkurrenten rekker det."),
     ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse fra jobbene dine. Vi tar resten."),
     ("Økonomisk rapport", "Du får tallene i kroner, ikke klikk og visninger: hva som er brukt, hvor mange henvendelser det ga, og hva hver henvendelse kostet."),
+    ("AI-assistent for tilbud", 'En AI-assistent som lager tilbudsutkastet for deg, ut fra det dere har sendt før og prislista dere bruker.'),   # N6: ingress = pakke-beskrivelsen
+    ("Arbeidskalender", 'Én tavle for alle jobbene. Dra dem over på riktig montør, fra mobil eller PC.'),
 ]
 tjenester = f"""
 <section class="page-head"><div class="wrap">
@@ -466,6 +474,17 @@ PK = [
         "<strong>Oppsett etter avtale.</strong> Fast pris, uten tillegg per henvendelse. Ingen bindingstid og ingen oppsigelsestid. Annonsebudsjett fra 25.000 kr/mnd betales direkte.",
         "Alt i Eksklusiv · flere områder · hjelp til å samle Google-anmeldelser etter fullført jobb · ukentlig rapport · månedlig strategimøte · egen kontaktperson.",
         "<strong>Passer for:</strong> bedrifter med flere lag og kapasitet til å ta imot volum. Vi setter opp Pro etter en gjennomgang av bedriften. Ta kontakt.",
+    ]),
+    # N6 29.10: to piloter (Tobias). Arbeidskalender: pris etter avtale – ikke finn på et tall.
+    ("Tilbudsassistent", 'En AI-assistent som lager tilbudsutkastet for deg, ut fra det dere har sendt før og prislista dere bruker.', "1.990 kr/mnd", [
+        "<strong>Oppsett 9.990 kr.</strong> Pilot. Ingen bindingstid og ingen oppsigelsestid.",
+        "Oppsett på deres egne tilbud og prisliste · tilbudsutkast fra en kort beskrivelse av jobben · dere retter og sender · alle tilbud samlet.",
+        "<strong>Passer for:</strong> deg som bruker kveldene på tilbud, og vil bruke dem på noe annet.",
+    ]),
+    ("Arbeidskalender", 'Én tavle for alle jobbene. Dra dem over på riktig montør, fra mobil eller PC.', "Pilot", [
+        "<strong>Pris etter avtale.</strong> Ingen bindingstid.",
+        "Tavle med montørene deres · jobber med kunde, adresse, telefon, avtale og notat · legg inn fra mobil, med bilde av lappen eller teksten fra e-posten · alle ser det samme.",
+        "<strong>Passer for:</strong> firmaer med 2–8 montører som planlegger på tavle, lapper eller i hodet i dag.",
     ]),
     ("Sosiale medier", "Vi skriver innleggene og driver Facebook og Instagram for deg. Du sender bilder og en kort beskrivelse. Vi tar resten.", "3.990 kr/mnd", [
         "<strong>Oppsett 4.900 kr.</strong> Tillegg som kan legges til alle pakker. Ingen bindingstid.",
@@ -592,7 +611,7 @@ notfound = f"""
 PAGES = [
     ("index", "HiFive Studio – Google-synlighet for håndverkere", "Vi setter opp Google-profil, annonser og landingsside for håndverkerbedrifter – og drifter det videre. Fast månedspris, ingen bindingstid.", home),
     ("tjenester", "Tjenester – HiFive Studio", "Google Bedriftsprofil, Google Ads og Meta-annonser, landingsside, varsel under 30 sekunder, sosiale medier og rapport i kroner.", tjenester),
-    ("priser-og-pakker", "Priser og pakker – HiFive Studio", "Synlig fra 1.490 kr/mnd, Kundebooking 5.900 kr/mnd, Eksklusiv 9.900 kr/mnd. Ingen bindingstid, ingen prosent av annonsebudsjettet.", priser),
+    ("priser-og-pakker", "Priser og pakker – HiFive Studio", "Synlig fra 1.490 kr/mnd, Kundebooking 5.900 kr/mnd, Eksklusiv 9.900 kr/mnd. Nytt: AI-assistent for tilbud og Arbeidskalender (pilot). Ingen bindingstid.", priser),
     ("kontakt", "Kontakt – HiFive Studio", "Ring 91 90 40 10 eller send e-post til tobias@hifivestudio.no for en gratis gjennomgang.", kontakt),
     ("om-oss", "Om oss – HiFive Studio", "HiFive Studio drives av Tobias Svendsen, rørlegger med 14 år i faget. Vi gjør håndverksbedrifter synlige på Google og sender henvendelsene rett på mobilen.", omoss),
     ("vilkar", "Vilkår – HiFive Studio", "Vilkår for bruk av hifivestudio.no og tjenestene til HiFive Studio.", vilkar),
