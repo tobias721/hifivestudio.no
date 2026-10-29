@@ -13,6 +13,8 @@ SAKER = [   # (uttrykk, forventet)
     ('H.perDag(H.verdi({snitt:720}))', "≈ 24 om dagen."),
     ('H.mestI([880,700,650,600,560,520,480,500,640,700,760,820])', "Mest i januar: 880."),
     ('H.mestI({"mars": 1200, "april": 900})', "Mest i mars: 1 200."),
+    ('H.mestI({"2025-11": 590, "2025-12": 480, "2026-01": 880})', "Mest i januar 2026: 880."),
+    ('H.perDag(H.verdi({"snitt": 720, "maaneder": {"2026-01": 880}}))', "≈ 24 om dagen."),
     ('H.verdi({lav:20, hoy:86}).tekst', "20–86"),
     ('String(H.verdi(null))', "null"),
     ('H.mestI(null)', ""),

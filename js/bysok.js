@@ -18,9 +18,10 @@
     var a = Math.round(v.min / 30), b = Math.round(v.maks / 30);
     return a < 1 ? "Det er opptil " + fmt(b) + " søk om dagen." : "Det er omtrent " + fmt(a) + "–" + fmt(b) + " søk om dagen.";
   }
-  function mestI(m) {   // maaneder = [12 tall, jan–des] eller {"januar": 880, …}
+  function mestI(m) {   // maaneder = [12 tall, jan–des], {"januar": 880, …} eller V1-formatet {"2026-01": 880, …}
     if (!m) return "";
-    var liste = Array.isArray(m) ? m.map(function (n, i) { return [MND[i], n]; }) : Object.keys(m).map(function (k) { return [k, m[k]]; });
+    var navn = function (k) { var d = /^(\d{4})-(\d{2})$/.exec(k); return d ? MND[parseInt(d[2], 10) - 1] + " " + d[1] : k; };
+    var liste = Array.isArray(m) ? m.map(function (n, i) { return [MND[i], n]; }) : Object.keys(m).map(function (k) { return [navn(k), m[k]]; });
     if (!liste.length) return "";
     var best = liste.reduce(function (a, b) { return b[1] > a[1] ? b : a; });
     return "Mest i " + best[0] + ": " + fmt(best[1]) + ".";
