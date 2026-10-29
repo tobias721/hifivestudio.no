@@ -18,10 +18,30 @@ SAKER = [   # (uttrykk, forventet)
     ('H.verdi({lav:20, hoy:86}).tekst', "20–86"),
     ('String(H.verdi(null))', "null"),
     ('H.mestI(null)', ""),
+    # B1 30.10: søket i alle stedene (ekte data/bysok.json lastet inn som D)
+    ('H.sok(D, "Bærum", 1)[0].by', "Bærum"),
+    ('H.sok(D, "Baerum", 1)[0].by', "Bærum"),
+    ('H.sok(D, "bærum kommune", 1)[0].by', "Bærum"),
+    ('H.sok(D, "Bærun", 1)[0].by', "Bærum"),
+    ('H.sok(D, "Sandvika", 1)[0].by', "Sandvika"),
+    ('H.etikett(H.sok(D, "Bekkestua", 1)[0])', "Bekkestua (Bærum)"),
+    ('H.etikett(H.sok(D, "Hamar", 1)[0])', "Hamar"),
+    ('String(H.sok(D, "Tromsoe", 1)[0].by)', "Tromsø"),
+    ('String(H.sok(D, "Aalesund", 1)[0].by)', "Ålesund"),
+    ('String(H.sok(D, "be").length <= 8)', "true"),
+    ('String(H.sok(D, "xqzv").length)', "0"),
+    ('H.kildeFor(H.sok(D, "Bærum", 1)[0], D).by', "Sandvika"),
+    ('H.kildeFor(H.sok(D, "Grünerløkka", 1)[0], D).by', "Oslo"),
+    ('String(H.kildeFor(H.sok(D, "Nesbyen", 1)[0], D))', "null"),
+    ('H.utenTallTekst("Nesbyen").indexOf("Vi har ikke tallet for <strong>Nesbyen</strong> ennå")', "0"),
+    # ingen oppslag med tomt tall viser et intervall: kildeFor gir enten null eller et sted med ekte tall
+    ('String(D.filter(function(b){var k=H.kildeFor(b,D);return k && !H.verdi(k.rorlegger);}).length)', "0"),
+    ('String(D.filter(function(b){return !b.rorlegger && H.kildeFor(b,D)===b;}).length)', "0"),
 ]
 def main():
     js = open(os.path.join(ROT, "js", "bysok.js"), encoding="utf-8").read()
-    kropp = "<script>" + js + "</script><script>var H=window.HiFiveBy,r=[];" + "".join(
+    data = open(os.path.join(ROT, "data", "bysok.json"), encoding="utf-8").read()
+    kropp = "<script>" + js + "</script><script>var D=(" + data + ").byer,H=window.HiFiveBy,r=[];" + "".join(
         f"try{{r.push(String({u}))}}catch(e){{r.push('FEIL '+e)}};" for u, _ in SAKER) + \
         "document.title='R'+JSON.stringify(r)</script>"
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False, encoding="utf-8") as f:

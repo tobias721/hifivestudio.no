@@ -26,17 +26,71 @@
     var best = liste.reduce(function (a, b) { return b[1] > a[1] ? b : a; });
     return "Mest i " + best[0] + ": " + fmt(best[1]) + ".";
   }
-  window.HiFiveBy = { verdi: verdi, perDag: perDag, mestI: mestI };
+  // ---- B1 30.10: søk i ~580 steder (kommuner, tettsteder, bydeler) som tåler skrivefeil og æøå/ae-oe-aa ----
+  function canon(s) {   // «Bærum kommune» / «Baerum» / «BÆRUM» → «baerum»; «Tromsø»/«Tromsoe» → «tromso»; «Ålesund»/«Aalesund» → «alesund»
+    return String(s || "").toLowerCase().replace(/\s+(kommune|bydel|by|sentrum)$/, "")
+      .replace(/æ/g, "ae").replace(/ø/g, "o").replace(/å/g, "a").replace(/oe/g, "o").replace(/aa/g, "a")
+      .replace(/[^a-z0-9]+/g, " ").trim();
+  }
+  function avstand(a, b, maks) {   // redigeringsavstand (Levenshtein), stopper over maks
+    if (Math.abs(a.length - b.length) > maks) return maks + 1;
+    var f = [], i, j;
+    for (j = 0; j <= b.length; j++) f[j] = j;
+    for (i = 1; i <= a.length; i++) {
+      var forrige = f[0], minst = f[0] = i;
+      for (j = 1; j <= b.length; j++) {
+        var tmp = f[j];
+        f[j] = Math.min(f[j] + 1, f[j - 1] + 1, forrige + (a[i - 1] === b[j - 1] ? 0 : 1));
+        forrige = tmp; if (f[j] < minst) minst = f[j];
+      }
+      if (minst > maks) return maks + 1;
+    }
+    return f[b.length];
+  }
+  function harTall(b) { return !!(b && verdi(b.rorlegger)); }
+  function sokSteder(liste, q, maks) {   // → inntil maks steder, best først: eksakt, starten av navnet, ordstart, inni, skrivefeil
+    q = canon(q); maks = maks || 8;
+    if (!q) return [];
+    var grense = q.length >= 7 ? 2 : q.length >= 4 ? 1 : 0, treff = [];
+    liste.forEach(function (b) {
+      var n = canon(b.by), p = -1;
+      if (n === q) p = 0;
+      else if (n.indexOf(q) === 0) p = 1;
+      else if ((" " + n).indexOf(" " + q) > -1) p = 2;
+      else if (q.length >= 3 && n.indexOf(q) > -1) p = 3;
+      else if (grense) { var d = avstand(q, n, grense); if (d <= grense) p = 3 + d; }
+      if (p > -1) treff.push([p, b]);
+    });
+    treff.sort(function (x, y) {
+      return x[0] - y[0] || (harTall(y[1]) - harTall(x[1])) || ((y[1].folk || 0) - (x[1].folk || 0)) || (x[1].by < y[1].by ? -1 : 1);
+    });
+    return treff.slice(0, maks).map(function (t) { return t[1]; });
+  }
+  function etikett(b) {   // «Bekkestua (Bærum)» – kommunen i parentes når stedet ikke selv er kommunen
+    return b.kommune && canon(b.kommune) !== canon(b.by) ? b.by + " (" + b.kommune + ")" : b.by;
+  }
+  function kildeFor(b, liste) {   // stedet selv hvis det har tall, ellers stedet med tall i samme kommune (tall_fra), ellers null
+    if (harTall(b)) return b;
+    if (!b || !b.tall_fra) return null;
+    for (var i = 0; i < liste.length; i++) if (liste[i].by === b.tall_fra && harTall(liste[i])) return liste[i];
+    return null;
+  }
+  function utenTallTekst(navn) {
+    return "Vi har ikke tallet for <strong>" + escH(navn) + "</strong> ennå. Ring <a href=\"tel:+4791904010\">91 90 40 10</a> " +
+           "eller send e-post, så henter vi det for deg.";
+  }
+  function escH(s) { return String(s).replace(/[&<>"']/g, function (c) { return "&#" + c.charCodeAt(0) + ";"; }); }
+  window.HiFiveBy = { verdi: verdi, perDag: perDag, mestI: mestI, canon: canon, sok: sokSteder, etikett: etikett,
+                      kildeFor: kildeFor, harTall: harTall, utenTallTekst: utenTallTekst };
 
   var kort = document.getElementById("hkort");
   if (!kort || !window.fetch) return;
-  var sok = document.getElementById("hsok"), felt = document.getElementById("hby"), liste = document.getElementById("hbyer"),
+  var sok = document.getElementById("hsok"), felt = document.getElementById("hby"), forslag = document.getElementById("hforslag"),
       knapp = document.getElementById("hsjekk"), tag = document.getElementById("htag"), tittel = document.getElementById("htittel"),
-      dato = document.getElementById("hdato"), innhold = document.getElementById("hinnhold"), byer = [];
+      dato = document.getElementById("hdato"), innhold = document.getElementById("hinnhold"), byer = [], valgt = null, aktiv = -1, viste = [];
   var rolig = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function norm(s) { return (s || "").toLowerCase().replace(/\s+/g, " ").trim(); }
-  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return "&#" + c.charCodeAt(0) + ";"; }); }
+  var esc = escH;
   function mailto(by) {
     var tekst = "Hei Tobias!\n\nJeg vil gjerne ha en gratis helsesjekk for " + by + ".\n\nFirma:\nTelefon:\n\nMvh";
     return "mailto:tobias@hifivestudio.no?subject=" + encodeURIComponent("Helsesjekk for " + by) + "&body=" + encodeURIComponent(tekst);
@@ -48,16 +102,30 @@
   }
   function igjen() {   // «Prøv en annen by»: tøm feltet og sett fokus
     var b = document.getElementById("higjen");
-    if (b) b.addEventListener("click", function () { felt.value = ""; felt.focus(); });
+    if (b) b.addEventListener("click", function () { felt.value = ""; valgt = null; felt.focus(); });
   }
   function adresse(by) {   // ?by=<By> så lenken kan deles (bare i svar til interesserte og i helsesjekk-PDF)
     try { var u = new URL(location.href); u.searchParams.set("by", by); history.replaceState(null, "", u); } catch (e) {}
   }
-  function finn(q) {   // eksakt, så starten av navnet, så delord («Lillestr» → Lillestrøm)
-    q = norm(q);
-    if (!q) return null;
-    var f = function (t) { for (var i = 0; i < byer.length; i++) if (t(norm(byer[i].by))) return byer[i]; return null; };
-    return f(function (n) { return n === q; }) || f(function (n) { return n.indexOf(q) === 0; }) || f(function (n) { return n.indexOf(q) > -1; });
+  // ---- forslagslista (combobox): maks 8, piltaster, Enter, Esc, klikk ----
+  function lukk() { forslag.hidden = true; felt.setAttribute("aria-expanded", "false"); felt.removeAttribute("aria-activedescendant"); aktiv = -1; }
+  function marker(i) {
+    aktiv = i;
+    Array.prototype.forEach.call(forslag.children, function (li, j) { li.setAttribute("aria-selected", j === i ? "true" : "false"); });
+    if (i > -1) felt.setAttribute("aria-activedescendant", "hforslag-" + i); else felt.removeAttribute("aria-activedescendant");
+  }
+  function velg(b) { valgt = b; felt.value = b.by; lukk(); vis(); }
+  function visForslag() {
+    valgt = null;
+    viste = sokSteder(byer, felt.value, 8);
+    if (!viste.length) return lukk();
+    forslag.innerHTML = viste.map(function (b, i) {
+      return '<li role="option" id="hforslag-' + i + '" aria-selected="false">' + esc(etikett(b)) + "</li>";
+    }).join("");
+    Array.prototype.forEach.call(forslag.children, function (li, i) {
+      li.addEventListener("mousedown", function (e) { e.preventDefault(); velg(viste[i]); });   // før feltet mister fokus
+    });
+    forslag.hidden = false; felt.setAttribute("aria-expanded", "true"); marker(-1);
   }
   function tell(el) {   // tellende tall på 300 ms: «1 000–10 000» teller fra 0 til hvert av tallene
     var mal = el.getAttribute("data-v");
@@ -77,37 +145,49 @@
   }
   function vis() {
     var q = felt.value.trim();
-    if (!q) return;
-    var b = finn(q), by = b ? b.by : q.charAt(0).toUpperCase() + q.slice(1);
+    if (!q && !valgt) return;
+    lukk();
+    var b = valgt || sokSteder(byer, q, 1)[0] || null, by = b ? b.by : q.charAt(0).toUpperCase() + q.slice(1);
+    var k = kildeFor(b, byer);
     tittel.textContent = "Rørlegger i " + by;
-    if (!b) {
-      tag.textContent = "Ikke hentet ennå"; dato.textContent = "";
-      innhold.innerHTML = knapp_html("Vi har ikke tallene for <strong>" + esc(by) + "</strong> klare – vi henter dem gratis.", by);
+    if (!k) {   // aldri et tall vi ikke har (B1)
+      tag.textContent = "Ikke hentet ennå"; dato.textContent = b && b.kommune && b.kommune !== b.by ? b.kommune + " kommune" : "";
+      innhold.innerHTML = knapp_html(utenTallTekst(by), by);
       igjen(); adresse(by);
       return;
     }
-    tag.textContent = "Tall fra Google"; dato.textContent = "Siste 12 måneder";
+    var egne = k === b;
+    tag.textContent = egne ? "Tall fra Google" : "Tall for " + k.by; dato.textContent = "Siste 12 måneder";
     var rad = function (dt, v) { return '<div><dt>' + dt + '</dt><dd class="tell" data-v="' + esc(v) + '">' + esc(v) + '</dd></div>'; };
-    var ror = verdi(b.rorlegger), bad = verdi(b.baderom), kp = verdi(b.klikkpris);
+    var ror = verdi(k.rorlegger), bad = verdi(k.baderom), kp = verdi(k.klikkpris);
     var ekstra = [perDag(ror), mestI(ror && ror.maaneder)].filter(Boolean).join(" ");
-    innhold.innerHTML = '<dl>' + rad("Søk i måneden, «rørlegger " + esc(by.toLowerCase()) + "»", ror.tekst) +
-      (bad ? rad("Baderom " + esc(by), bad.tekst) : "") +
+    innhold.innerHTML = (egne ? "" : '<p class="report-dag">Vi har ikke egne tall for ' + esc(by) + ' ennå. Tallene under gjelder søk på «rørlegger ' +
+        esc(k.by.toLowerCase()) + '» i samme kommune.</p>') +
+      '<dl>' + rad("Søk i måneden, «rørlegger " + esc(k.by.toLowerCase()) + "»", ror.tekst) +
+      (bad ? rad("Baderom " + esc(k.by), bad.tekst) : "") +
       (kp ? rad("Klikkpris, toppen av siden", kp.tekst + " kr") : "") +
       '</dl>' + (ekstra ? '<p class="report-dag">' + esc(ekstra) + '</p>' : "") +
       '<p class="report-kilde">Kilde: Google Ads Søkeordplanlegger</p>' +
       knapp_html("Hvor står ditt firma? Få gratis helsesjekk for " + esc(by) + ".", by);
-    igjen(); adresse(b.by);
+    igjen(); adresse(by);
     Array.prototype.forEach.call(innhold.querySelectorAll(".tell"), tell);
   }
 
   fetch("/data/bysok.json").then(function (r) { return r.json(); }).then(function (d) {
     byer = d.byer || [];
-    liste.innerHTML = byer.map(function (b) { return '<option value="' + esc(b.by) + '">'; }).join("");
     sok.hidden = false;
     // høyden låses til eksempelkortets (med søkefeltet) på desktop, så siden ikke hopper når tallene byttes
     if (matchMedia("(min-width:981px)").matches) kort.style.setProperty("--hkort-h", kort.offsetHeight + "px");
     knapp.addEventListener("click", vis);
-    felt.addEventListener("keydown", function (e) { if (e.key === "Enter") vis(); });
+    felt.addEventListener("input", visForslag);
+    felt.addEventListener("blur", function () { setTimeout(lukk, 120); });
+    felt.addEventListener("keydown", function (e) {
+      var n = forslag.hidden ? 0 : viste.length;
+      if (e.key === "ArrowDown" && n) { e.preventDefault(); marker((aktiv + 1) % n); }
+      else if (e.key === "ArrowUp" && n) { e.preventDefault(); marker((aktiv - 1 + n) % n); }
+      else if (e.key === "Escape") lukk();
+      else if (e.key === "Enter") { e.preventDefault(); if (aktiv > -1) velg(viste[aktiv]); else vis(); }
+    });
     var fra = new URLSearchParams(location.search).get("by");   // hifivestudio.no/?by=Hamar (lenke i e-post)
     if (fra) { felt.value = fra; vis(); }
   }).catch(function () { /* data utilgjengelig → kortet står som eksempel */ });

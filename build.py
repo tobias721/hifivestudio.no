@@ -213,7 +213,8 @@ def hcard(n, t, v, u, d):
 
 
 # ---------- N5 27.10: forsiden i lys «Visionmedia»-retning ----------
-ANTALL_BYER = len(__import__("json").loads((OUT / "data" / "bysok.json").read_text(encoding="utf-8"))["byer"])
+# B1: bysok.json har nå alle steder (også uten tall) – stripa teller bare steder med egne søketall
+ANTALL_BYER = sum(1 for b in __import__("json").loads((OUT / "data" / "bysok.json").read_text(encoding="utf-8"))["byer"] if b.get("rorlegger"))
 STATS = [("14 år", "som rørlegger"), (f"{ANTALL_BYER} byer", "med Googles søketall"),
          ("1 virkedag", "maks svartid på henvendelser"), ("1 bedrift", "per område")]
 PAIN = ["Konkurrenten ligger øverst på «rørlegger + byen din», ikke du.",
@@ -271,8 +272,9 @@ HEALTH = [
 REPORT = """<aside class="report" id="hkort" aria-label="Helsesjekk – søk på byen din">
   <div class="report-sok" id="hsok" hidden>
     <label class="sr" for="hby">Skriv byen din</label>
-    <input id="hby" list="hbyer" placeholder="Skriv byen din" autocomplete="off" enterkeyhint="search">
-    <datalist id="hbyer"></datalist>
+    <div class="report-felt"><input id="hby" placeholder="Skriv byen eller stedet ditt" autocomplete="off" enterkeyhint="search"
+      role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="hforslag">
+    <ul id="hforslag" class="report-forslag" role="listbox" aria-label="Steder" hidden></ul></div>
     <button class="btn" id="hsjekk" type="button">Sjekk</button>
   </div>
   <div class="report-top"><span class="eyebrow">Helsesjekk</span><span class="report-tag" id="htag">Eksempel</span></div>

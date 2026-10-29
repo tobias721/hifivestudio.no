@@ -54,8 +54,9 @@
   <aside class="report" id="hkort" aria-label="Helsesjekk – søk på byen din">
   <div class="report-sok" id="hsok" hidden>
     <label class="sr" for="hby">Skriv byen din</label>
-    <input id="hby" list="hbyer" placeholder="Skriv byen din" autocomplete="off" enterkeyhint="search">
-    <datalist id="hbyer"></datalist>
+    <div class="report-felt"><input id="hby" placeholder="Skriv byen eller stedet ditt" autocomplete="off" enterkeyhint="search"
+      role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="hforslag">
+    <ul id="hforslag" class="report-forslag" role="listbox" aria-label="Steder" hidden></ul></div>
     <button class="btn" id="hsjekk" type="button">Sjekk</button>
   </div>
   <div class="report-top"><span class="eyebrow">Helsesjekk</span><span class="report-tag" id="htag">Eksempel</span></div>
