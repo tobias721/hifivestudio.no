@@ -40,6 +40,9 @@ SAKER = [   # (uttrykk, forventet)
     ('H.kildeFor(H.sok(D, "Jar", 1)[0], D).by', "Sandvika"),
     ('H.kildeFor(H.sok(D, "Hovik", 1)[0], D).by', "Sandvika"),
     ('H.etikett(H.sok(D, "Snarøya", 1)[0])', "Snarøya (Bærum)"),
+    ('H.sok(D, "Tanum").map(H.etikett).join(" | ")', "Tanum (Bærum) | Tanum (Larvik)"),
+    ('String(H.kildeFor(D.filter(function(b){return b.by==="Tanum" && b.kommune==="Larvik";})[0], D))', "null"),
+    ('H.kildeFor(D.filter(function(b){return b.by==="Tanum" && b.kommune==="Bærum";})[0], D).by', "Sandvika"),
     # ingen oppslag med tomt tall viser et intervall: kildeFor gir enten null eller et sted med ekte tall
     ('String(D.filter(function(b){var k=H.kildeFor(b,D);return k && !H.verdi(k.rorlegger);}).length)', "0"),
     ('String(D.filter(function(b){return !b.rorlegger && H.kildeFor(b,D)===b;}).length)', "0"),

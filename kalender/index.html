@@ -39,8 +39,6 @@ button{cursor:pointer}
 .app{height:100%;display:flex;flex-direction:column}
 
 /* Topp */
-.tilbake{font-size:13px;color:var(--fg2);text-decoration:none;border-right:1px solid var(--linje);padding-right:12px}
-.tilbake:hover{color:var(--fg)}
 .topp{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--flate);border-bottom:1px solid var(--linje);
   padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -79,8 +77,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .kort .kunde{font-weight:600;margin-top:1px}
 .kort .adr{color:var(--fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .kort .hva{margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.kort[data-status="pagar"]{background:var(--pagar-bg)} .kort[data-status="pagar"]::before,.kort[data-status="pagar"] .tid{background:var(--pagar);color:var(--pagar)}
-.kort[data-status="ferdig"]{background:var(--ferdig-bg)} .kort[data-status="ferdig"]::before,.kort[data-status="ferdig"] .tid{background:var(--ferdig);color:var(--ferdig)}
+.kort[data-status="pagar"]{background:var(--pagar-bg)} .kort[data-status="pagar"]::before{background:var(--pagar)} .kort[data-status="pagar"] .tid{color:var(--pagar)}
+.kort[data-status="ferdig"]{background:var(--ferdig-bg)} .kort[data-status="ferdig"]::before{background:var(--ferdig)} .kort[data-status="ferdig"] .tid{color:var(--ferdig)}
 .kort[data-status="ferdig"] .kunde{text-decoration:line-through;text-decoration-color:var(--fg2)}
 .kort.utildelt{background:var(--flate);border:1px dashed var(--fri)} .kort.utildelt::before{background:var(--fri)} .kort.utildelt .tid{color:var(--fri)}
 .kort.kollisjon{border-color:var(--feil);box-shadow:0 0 0 2px color-mix(in srgb,var(--feil) 25%,transparent)}
@@ -185,6 +183,8 @@ dialog::backdrop{background:rgba(10,14,22,.45)}
   .rad2,.rad3{grid-template-columns:1fr 1fr}
 }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} .spok{transform:none} }
+.tilbake{font-size:13px;color:var(--fg2);text-decoration:none;border-right:1px solid var(--linje);padding-right:12px}
+.tilbake:hover{color:var(--fg)}
 </style>
 
 </head>
@@ -322,7 +322,7 @@ dialog::backdrop{background:rgba(10,14,22,.45)}
 <script>
 (function(){
 'use strict';
-const NOKKEL='hifive-kalender-demo-v2';
+const NOKKEL='hifive-kalender-demo-v3';
 const DAGER=['søn','man','tir','ons','tor','fre','lør'];
 const DAGER_LANG=['søndag','mandag','tirsdag','onsdag','torsdag','fredag','lørdag'];
 const MND=['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];
@@ -346,8 +346,13 @@ const ukenr=d=>{const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate
 const idag=()=>{const d=new Date();d.setHours(0,0,0,0);return d;};
 
 // ---------- data ----------
+function demoDag(n){ // demoen skal alltid se levende ut: dag 0 = i dag (helg → mandag), så n virkedager fram
+  let x=idag(); if(x.getDay()===6) x=plussDag(x,2); if(x.getDay()===0) x=plussDag(x,1);
+  while(n>0){ x=plussDag(x,1); if(x.getDay()!==0&&x.getDay()!==6) n--; }
+  return iso(x);
+}
 function demoJobber(){
-  const m=mandag(idag()); const d=n=>iso(plussDag(m,n));
+  const d=demoDag;
   return [
     {id:'j1',kunde:'Kari Nordmann',tlf:'912 34 567',adresse:'Lilleakerveien 31B, Oslo',hva:'Bytte blandebatteri kjøkken',dato:d(0),fra:'08:00',til:'09:30',montor:'m1',status:'ferdig',notat:'Nøkkel under matta.'},
     {id:'j2',kunde:'Sameiet Bjørnsletta',tlf:'22 11 22 33',adresse:'Ullernchausseen 60, Oslo',hva:'Lekkasje bad 3. etg, finne årsak',dato:d(0),fra:'10:00',til:'12:00',montor:'m1',status:'pagar',notat:'Vaktmester Tor møter oss.'},
@@ -365,7 +370,7 @@ function demoJobber(){
     {id:'v2',kunde:'Sameiet Tåsen Terrasse',tlf:'22 18 00 40',adresse:'Tåsenveien 70, Oslo',hva:'Bytte 6 stoppekraner i kjeller',dato:'',fra:'08:00',til:'14:00',montor:null,status:'plan',venter:true,frist:'Når styret har godkjent',notat:'Vannet må stenges for hele blokka. Varsle beboere 3 dager før.'},
   ];
 }
-function demoLaerling(){ const m=mandag(idag()); return {[iso(plussDag(m,0))]:'m2',[iso(plussDag(m,1))]:'m2',[iso(plussDag(m,2))]:'m1',[iso(plussDag(m,3))]:'m2'}; }
+function demoLaerling(){ return {[demoDag(0)]:'m2',[demoDag(1)]:'m2',[demoDag(2)]:'m1',[demoDag(3)]:'m2'}; }
 let jobber=null, laerling=null;
 try{const r=localStorage.getItem(NOKKEL); if(r){const o=JSON.parse(r); if(Array.isArray(o.jobber)) jobber=o.jobber; if(o.laerling&&typeof o.laerling==='object') laerling=o.laerling;}}catch(e){}
 if(!jobber){jobber=demoJobber(); laerling=demoLaerling();}
@@ -654,7 +659,7 @@ document.getElementById('onskeSkjema').addEventListener('submit',e=>{
   feil.textContent='E-postprogrammet ditt åpner seg med teksten klar. Åpner det seg ikke: trykk «Kopier teksten» og send den til tobias@hifivestudio.no.';feil.hidden=false;
 });
 document.getElementById('onskeKopier').onclick=e=>{const b=e.currentTarget;const t=onskeTekst();(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent='Kopiert';setTimeout(()=>b.textContent='Kopier teksten',1500);}).catch(()=>{const ta=document.getElementById('oTekst');ta.focus();ta.select();});};
-try{ if(localStorage.getItem(NOKKEL+'-intro')==='lukket') document.getElementById('intro').open=false; }catch(e){}
+try{ const iv=localStorage.getItem(NOKKEL+'-intro'); if(iv==='lukket'||(iv===null&&window.matchMedia('(max-width:720px)').matches)) document.getElementById('intro').open=false; }catch(e){ if(window.matchMedia('(max-width:720px)').matches) document.getElementById('intro').open=false; }
 document.getElementById('intro').addEventListener('toggle',e=>{try{localStorage.setItem(NOKKEL+'-intro',e.target.open?'apen':'lukket');}catch(x){}});
 
 // ---------- start ----------

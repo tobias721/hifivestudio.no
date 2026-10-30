@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 tests/*)",
+      "Bash(python3 -m pytest*)",
+      "Bash(gh run list*)",
+      "Bash(gh run view*)",
+      "Bash(curl -s*)",
+      "Bash(curl -sI*)",
+      "Bash(sleep *)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)"
+    ]
+  }
+}
